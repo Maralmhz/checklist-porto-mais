@@ -3,99 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist Porto Mais - Recebimento de Veículo</title>
+    <title>Checklist Porto Mais - Vistoria</title>
+    <!-- Biblioteca para gerar o PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Arial', sans-serif; background: #f5f5f5; padding: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; }
         
         .container {
-            max-width: 900px; margin: 0 auto; background: white; padding: 20px;
-            border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 900px; margin: 0 auto; background: white; padding: 30px;
+            border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #001a4d; padding-bottom: 15px; margin-bottom: 20px; }
-        .logo-section { text-align: center; flex: 1; }
-        .logo-text { font-size: 24px; font-weight: bold; color: #001a4d; line-height: 1.2; }
-        .logo-text .mais { color: #e63946; }
-        .header-subtitle { font-size: 12px; color: #666; margin-top: 5px; font-weight: bold; }
+        /* HEADER COM LOGO */
+        .header { display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #001a4d; padding-bottom: 20px; margin-bottom: 25px; }
+        .logo-section { text-align: center; }
+        .header-subtitle { font-size: 14px; color: #555; margin-top: 5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
         /* INFO BAR */
-        .info-header { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; font-size: 12px; }
-        .info-header-item { background: #f0f0f0; padding: 8px; border-left: 4px solid #001a4d; }
-        .info-header-item label { display: block; font-weight: bold; color: #001a4d; margin-bottom: 3px; }
-        .info-header-item input { width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 11px; }
+        .info-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .info-header-item { background: #f8f9fa; padding: 10px; border-left: 4px solid #001a4d; border-radius: 4px; }
+        .info-header-item label { display: block; font-weight: bold; color: #001a4d; font-size: 12px; margin-bottom: 5px; }
+        .info-header-item input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-weight: 600; }
 
         /* SECTIONS */
-        .section { margin-bottom: 25px; page-break-inside: avoid; }
+        .section { margin-bottom: 30px; break-inside: avoid; }
         .section-title {
-            background: linear-gradient(90deg, #001a4d 0%, #003d99 100%); color: white;
-            padding: 10px 15px; font-size: 14px; font-weight: bold; border-radius: 4px 4px 0 0; margin-bottom: 12px;
+            background: linear-gradient(90deg, #001a4d 0%, #003380 100%); color: white;
+            padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 6px 6px 0 0; 
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .section-content { border: 1px solid #ddd; border-radius: 0 0 4px 4px; padding: 15px; }
+        .section-content { border: 1px solid #e1e4e8; border-top: none; border-radius: 0 0 6px 6px; padding: 20px; background: #fff; }
 
-        /* FORMS */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px; }
-        .form-row.full { grid-template-columns: 1fr; }
-        .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+        /* FORM GRIDS */
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-weight: bold; color: #001a4d; margin-bottom: 5px; font-size: 12px; }
-        
-        input[type="text"], input[type="number"], input[type="tel"], select, textarea {
-            padding: 8px; border: 1px solid #bbb; border-radius: 3px; font-size: 12px; width: 100%;
-            font-family: Arial, sans-serif;
+        .form-group label { font-size: 12px; font-weight: 600; color: #444; margin-bottom: 5px; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; outline: none; transition: border 0.3s; }
+        .form-group input:focus { border-color: #001a4d; }
+
+        /* CHECKBOX GRIDS */
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .checkbox-item { display: flex; align-items: center; font-size: 13px; color: #333; cursor: pointer; background: #f9f9f9; padding: 8px; border-radius: 4px; }
+        .checkbox-item input { margin-right: 8px; width: 16px; height: 16px; accent-color: #001a4d; }
+
+        /* PNEUS & AVARIAS */
+        .radio-group { display: flex; gap: 10px; margin-top: 5px; }
+        .radio-label { display: flex; align-items: center; font-size: 12px; cursor: pointer; }
+        .radio-label input { margin-right: 4px; accent-color: #e63946; }
+
+        /* BOTÕES DE AÇÃO */
+        .actions { margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .btn {
+            flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; align-items: center; justify-content: center; min-width: 200px;
         }
-        textarea { resize: vertical; min-height: 60px; }
+        .btn-pdf { background-color: #001a4d; color: white; box-shadow: 0 4px 10px rgba(0, 26, 77, 0.3); }
+        .btn-pdf:hover { background-color: #002b80; transform: translateY(-2px); }
+        .btn-clear { background-color: white; color: #e63946; border: 2px solid #e63946; }
+        .btn-clear:hover { background-color: #fff0f1; }
 
-        /* CHECKBOX & RADIO */
-        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .checkbox-item, .radio-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-        .radio-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        /* Ocultar elementos na impressão/PDF se necessário */
+        .hide-on-print { display: none; }
 
-        /* AVARIAS */
-        .avaria-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .avaria-card { border: 1px solid #ddd; padding: 10px; border-radius: 3px; background: #fafafa; }
-        .avaria-card label { font-weight: bold; color: #001a4d; display: block; margin-bottom: 5px; font-size: 12px; }
-        .legenda { background: #f0f0f0; padding: 10px; border-radius: 3px; font-size: 10px; margin-bottom: 15px; }
-
-        /* ASSINATURAS */
-        .signature-row { display: flex; justify-content: space-between; margin-top: 30px; gap: 20px; }
-        .signature-box { flex: 1; text-align: center; }
-        .signature-line { border-top: 1px solid #000; width: 80%; margin: 5px auto 0; }
-
-        /* BUTTONS */
-        .button-group { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
-        button { padding: 12px 30px; font-size: 13px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; }
-        .btn-pdf { background: #e63946; color: white; }
-        .btn-clear { background: #666; color: white; }
-
-        /* CLASSE AUXILIAR PARA O PDF (Expansão de texto) */
-        .print-text-box {
-            border: 1px solid #ccc;
-            padding: 6px;
-            border-radius: 3px;
-            font-size: 12px;
-            background: #fff;
-            width: 100%;
-            min-height: 25px;
-            white-space: pre-wrap; /* Mantém quebra de linha */
-            word-wrap: break-word; /* Quebra palavras longas */
-            overflow: visible;
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .info-header { grid-template-columns: 1fr; }
+            .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="documento">
-        <!-- HEADER -->
+
+    <div class="container" id="conteudo-vistoria">
+        
+        <!-- HEADER COM LOGO -->
         <div class="header">
             <div class="logo-section">
-                <!-- LOGO IMAGEM -->
-                <!-- Certifique-se de que o nome do arquivo da sua imagem é 'logo.png' ou altere o src abaixo -->
-                <img src="logo.png" alt="Logo Porto Mais" style="max-width: 300px; height: auto; margin-bottom: 10px;">
-                
+                <!-- Certifique-se que o arquivo logo.png existe na pasta -->
+                <img src="logo.png" alt="Logo Porto Mais" style="max-width: 280px; height: auto; margin-bottom: 5px;">
                 <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
             </div>
         </div>
+
         <!-- INFO HEADER -->
         <div class="info-header">
             <div class="info-header-item">
@@ -108,309 +100,249 @@
             </div>
             <div class="info-header-item">
                 <label>Nº Sinistro/Evento</label>
-                <input type="text" id="numero_evento">
+                <input type="text" placeholder="Ex: 12345">
             </div>
         </div>
 
-        <!-- DADOS DA OFICINA -->
         <div class="section">
-            <div class="section-title">📍 DADOS DA OFICINA CREDENCIADA</div>
+            <div class="section-title">📍 DADOS DA OFICINA / RESPONSÁVEL</div>
             <div class="section-content">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Oficina Responsável</label>
-                        <input type="text" id="oficina_nome" placeholder="Nome da oficina">
+                        <label>Oficina/Local</label>
+                        <input type="text" placeholder="Nome da Oficina">
                     </div>
                     <div class="form-group">
                         <label>Consultor Técnico</label>
-                        <input type="text" id="consultor_nome" placeholder="Nome do consultor">
+                        <input type="text" placeholder="Nome do Consultor">
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- DADOS DO CLIENTE -->
         <div class="section">
-            <div class="section-title">👤 DADOS DO BENEFICIÁRIO/TERCEIRO</div>
+            <div class="section-title">👤 DADOS DO CLIENTE</div>
             <div class="section-content">
-                <div class="form-row full">
-                    <div class="form-group">
-                        <label>Tipo de Cliente</label>
-                        <div class="radio-group">
-                            <div class="radio-item"><input type="radio" name="tipo_cliente" value="Associado"> Associado Porto Mais</div>
-                            <div class="radio-item"><input type="radio" name="tipo_cliente" value="Terceiro"> Terceiro</div>
-                        </div>
-                    </div>
-                </div>
                 <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select>
+                            <option>Associado Porto Mais</option>
+                            <option>Terceiro</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label>Nome Completo</label>
-                        <input type="text" id="cliente_nome">
-                    </div>
-                    <div class="form-group">
-                        <label>CPF/CNPJ</label>
-                        <input type="text" id="cliente_cpf">
+                        <input type="text" placeholder="Nome do Cliente">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
+                        <label>CPF/CNPJ</label>
+                        <input type="text" placeholder="000.000.000-00">
+                    </div>
+                    <div class="form-group">
                         <label>Telefone/WhatsApp</label>
-                        <input type="tel" id="cliente_telefone">
+                        <input type="text" placeholder="(00) 00000-0000">
                     </div>
                     <div class="form-group">
                         <label>Veículo Trazido Por</label>
-                        <select id="veiculo_trazido">
-                            <option value="">-- Selecione --</option>
-                            <option value="Próprio Cliente">Próprio Cliente</option>
-                            <option value="Guincho">Guincho</option>
-                            <option value="Outro">Outro</option>
+                        <select>
+                            <option>Próprio Cliente</option>
+                            <option>Guincho</option>
+                            <option>Outro</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VEICULO -->
         <div class="section">
             <div class="section-title">🚗 IDENTIFICAÇÃO DO VEÍCULO</div>
             <div class="section-content">
-                <div class="form-row three">
+                <div class="form-row">
                     <div class="form-group">
                         <label>Modelo/Versão</label>
-                        <input type="text" id="veiculo_modelo">
+                        <input type="text" placeholder="Ex: Gol 1.6 MSI">
                     </div>
                     <div class="form-group">
-                        <label>Ano/Modelo</label>
-                        <input type="text" id="veiculo_ano">
+                        <label>Placa</label>
+                        <input type="text" placeholder="ABC-1234" id="placa_veiculo">
                     </div>
                     <div class="form-group">
                         <label>Cor</label>
-                        <input type="text" id="veiculo_cor">
+                        <input type="text">
                     </div>
                 </div>
-                <div class="form-row three">
-                    <div class="form-group">
-                        <label>Placa</label>
-                        <input type="text" id="veiculo_placa">
-                    </div>
+                <div class="form-row">
                     <div class="form-group">
                         <label>Chassi (4 últimos)</label>
-                        <input type="text" id="veiculo_chassi">
+                        <input type="text" placeholder="XXXX">
                     </div>
                     <div class="form-group">
                         <label>KM Entrada</label>
-                        <input type="number" id="veiculo_km">
+                        <input type="number" placeholder="00000">
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Nível Combustível</label>
-                    <div class="radio-group">
-                        <div class="radio-item"><input type="radio" name="combustivel" value="Reserva"> Reserva</div>
-                        <div class="radio-item"><input type="radio" name="combustivel" value="1/4"> 1/4</div>
-                        <div class="radio-item"><input type="radio" name="combustivel" value="1/2"> 1/2</div>
-                        <div class="radio-item"><input type="radio" name="combustivel" value="3/4"> 3/4</div>
-                        <div class="radio-item"><input type="radio" name="combustivel" value="Cheio"> Cheio</div>
+                    <div class="form-group">
+                        <label>Nível Combustível</label>
+                        <select>
+                            <option>Reserva</option>
+                            <option>1/4</option>
+                            <option>1/2</option>
+                            <option>3/4</option>
+                            <option>Cheio</option>
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ITENS -->
         <div class="section">
-            <div class="section-title">✅ INVENTÁRIO DE PERTENCES</div>
+            <div class="section-title">✅ INVENTÁRIO (CHECKLIST)</div>
             <div class="section-content">
                 <div class="checkbox-grid">
-                    <div class="checkbox-item"><input type="checkbox"> Chave de Roda</div>
-                    <div class="checkbox-item"><input type="checkbox"> Macaco</div>
-                    <div class="checkbox-item"><input type="checkbox"> Triângulo</div>
-                    <div class="checkbox-item"><input type="checkbox"> Estepe</div>
-                    <div class="checkbox-item"><input type="checkbox"> Antena</div>
-                    <div class="checkbox-item"><input type="checkbox"> Tapetes</div>
-                    <div class="checkbox-item"><input type="checkbox"> Manual</div>
-                    <div class="checkbox-item"><input type="checkbox"> Chave Reserva</div>
-                    <div class="checkbox-item"><input type="checkbox"> Extintor</div>
-                    <div class="checkbox-item"><input type="checkbox"> Multimídia/Som</div>
+                    <label class="checkbox-item"><input type="checkbox"> Chave de Roda</label>
+                    <label class="checkbox-item"><input type="checkbox"> Macaco</label>
+                    <label class="checkbox-item"><input type="checkbox"> Triângulo</label>
+                    <label class="checkbox-item"><input type="checkbox"> Estepe</label>
+                    <label class="checkbox-item"><input type="checkbox"> Antena</label>
+                    <label class="checkbox-item"><input type="checkbox"> Tapetes</label>
+                    <label class="checkbox-item"><input type="checkbox"> Manual</label>
+                    <label class="checkbox-item"><input type="checkbox"> Chave Reserva</label>
+                    <label class="checkbox-item"><input type="checkbox"> Extintor</label>
+                    <label class="checkbox-item"><input type="checkbox"> Multimídia/Som</label>
                 </div>
                 <div class="form-group" style="margin-top: 15px;">
-                    <label>Observação de Pertences:</label>
-                    <textarea id="obs_pertences"></textarea>
+                    <label>Observações de Pertences:</label>
+                    <input type="text" placeholder="Ex: Estepe furado, som original...">
                 </div>
             </div>
         </div>
 
-        <!-- PNEUS -->
         <div class="section">
-            <div class="section-title">🛞 SITUAÇÃO DOS PNEUS</div>
+            <div class="section-title">🛞 PNEUS E ESTADO GERAL</div>
             <div class="section-content">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Dianteiros</label>
+                        <label>Pneus Dianteiros</label>
                         <div class="radio-group">
-                            <div class="radio-item"><input type="radio" name="pneu_d" value="Bom"> Bom</div>
-                            <div class="radio-item"><input type="radio" name="pneu_d" value="Ruim"> Ruim</div>
-                            <div class="radio-item"><input type="radio" name="pneu_d" value="Irregular"> Irregular</div>
+                            <label class="radio-label"><input type="radio" name="pneu_diant" value="Bom"> Bom</label>
+                            <label class="radio-label"><input type="radio" name="pneu_diant" value="Ruim"> Ruim</label>
+                            <label class="radio-label"><input type="radio" name="pneu_diant" value="Irregular"> Irregular</label>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Traseiros</label>
+                        <label>Pneus Traseiros</label>
                         <div class="radio-group">
-                            <div class="radio-item"><input type="radio" name="pneu_t" value="Bom"> Bom</div>
-                            <div class="radio-item"><input type="radio" name="pneu_t" value="Ruim"> Ruim</div>
-                            <div class="radio-item"><input type="radio" name="pneu_t" value="Irregular"> Irregular</div>
+                            <label class="radio-label"><input type="radio" name="pneu_tras" value="Bom"> Bom</label>
+                            <label class="radio-label"><input type="radio" name="pneu_tras" value="Ruim"> Ruim</label>
+                            <label class="radio-label"><input type="radio" name="pneu_tras" value="Irregular"> Irregular</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- AVARIAS -->
         <div class="section">
             <div class="section-title">⚠️ AVARIAS PRÉ-EXISTENTES</div>
             <div class="section-content">
-                <div class="legenda"><strong>LEGENDA:</strong> (R) Risco | (A) Amassado | (Q) Quebrado | (F) Falta | (S) Sinistro</div>
-                <div class="avaria-grid">
-                    <div class="avaria-card"><label>Frente/Parachoque</label><textarea></textarea></div>
-                    <div class="avaria-card"><label>Lat. Esquerda</label><textarea></textarea></div>
-                    <div class="avaria-card"><label>Lat. Direita</label><textarea></textarea></div>
-                    <div class="avaria-card"><label>Traseira</label><textarea></textarea></div>
-                    <div class="avaria-card"><label>Teto/Vidros</label><textarea></textarea></div>
-                    <div class="avaria-card"><label>Painel/Luzes</label><textarea></textarea></div>
+                <p style="font-size: 11px; color: #666; margin-bottom: 10px;">LEGENDA: (R) Risco | (A) Amassado | (Q) Quebrado | (F) Falta</p>
+                <div class="form-row">
+                    <div class="form-group"><label>Frente/Parachoque</label><input type="text"></div>
+                    <div class="form-group"><label>Lat. Esquerda</label><input type="text"></div>
+                    <div class="form-group"><label>Lat. Direita</label><input type="text"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Traseira</label><input type="text"></div>
+                    <div class="form-group"><label>Teto/Vidros</label><input type="text"></div>
+                    <div class="form-group"><label>Painel/Interno</label><input type="text"></div>
                 </div>
             </div>
         </div>
 
-        <!-- TERMO -->
         <div class="section">
-            <div class="section-title">📋 AUTORIZAÇÃO</div>
+            <div class="section-title">📋 AUTORIZAÇÃO E ASSINATURA</div>
             <div class="section-content">
-                <div class="checkbox-item" style="margin-bottom: 10px;">
-                    <input type="checkbox"> <strong>Autorização:</strong> Autorizo a desmontagem e reparos.
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox"> <strong>Ciência:</strong> Ciente que danos pré-existentes não são cobertos.
-                </div>
-            </div>
-        </div>
-
-        <!-- ASSINATURAS -->
-        <div class="section">
-            <div class="section-content" style="border: none;">
-                <div class="signature-row">
-                    <div class="signature-box">
-                        <div style="height: 40px;"></div>
-                        <div class="signature-line"></div>
-                        <span style="font-size: 10px; color: #666;">Responsável (Oficina)</span>
+                <p style="font-size: 12px; margin-bottom: 20px;">
+                    Declaro que os pertences acima foram conferidos na minha presença e autorizo a desmontagem para orçamento/reparo.
+                    Estou ciente que avarias não relacionadas ao evento (pré-existentes) não serão cobertas.
+                </p>
+                <div class="form-row" style="margin-top: 30px;">
+                    <div class="form-group" style="text-align: center;">
+                        <div style="border-bottom: 1px solid #000; height: 30px;"></div>
+                        <label style="margin-top: 5px;">Responsável (Oficina/Porto Mais)</label>
                     </div>
-                    <div class="signature-box">
-                        <div style="height: 40px;"></div>
-                        <div class="signature-line"></div>
-                        <span style="font-size: 10px; color: #666;">Cliente/Entregador</span>
+                    <div class="form-group" style="text-align: center;">
+                        <div style="border-bottom: 1px solid #000; height: 30px;"></div>
+                        <label style="margin-top: 5px;">Cliente / Entregador</label>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- BOTÕES -->
+        <div class="actions" data-html2canvas-ignore="true">
+            <button class="btn btn-pdf" onclick="gerarPDF()">📄 BAIXAR PDF / IMPRIMIR</button>
+            <button class="btn btn-clear" onclick="limparFormulario()">🔄 LIMPAR TUDO</button>
+        </div>
+
     </div>
 
-    <!-- BOTÕES FLUTUANTES -->
-    <div class="button-group">
-        <button class="btn-pdf" onclick="gerarPDF()">📄 BAIXAR PDF (CORRIGIDO)</button>
-        <button class="btn-clear" onclick="limpar()">🔄 LIMPAR</button>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // Data automática
-        document.getElementById('data_entrada').valueAsDate = new Date();
+        // --- 1. CONFIGURAÇÃO DE DATA E HORA AUTOMÁTICA ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            
+            // Define data
+            const dateInput = document.getElementById('data_entrada');
+            if(dateInput) dateInput.valueAsDate = now;
 
-        async function gerarPDF() {
-            const original = document.querySelector('.container');
-            const clone = original.cloneNode(true);
-
-            // 1. Configurar clone fora da tela para manipulação
-            clone.style.width = '800px'; // Largura fixa A4
-            clone.style.position = 'absolute';
-            clone.style.left = '-9999px';
-            clone.style.top = '0';
-            document.body.appendChild(clone);
-
-            // 2. SUBSTITUIÇÃO MÁGICA: Troca Inputs por Texto Fixo (Evita cortes!)
-            // Pegamos todos os inputs do original para copiar valores para o clone
-            const inputsOriginais = original.querySelectorAll('input, textarea, select');
-            const inputsClone = clone.querySelectorAll('input, textarea, select');
-
-            inputsClone.forEach((el, index) => {
-                const originalEl = inputsOriginais[index];
-                const tipo = el.type;
-                const tag = el.tagName.toLowerCase();
-
-                if (tipo === 'checkbox' || tipo === 'radio') {
-                    // Garante que o estado checked seja copiado visualmente
-                    if (originalEl.checked) {
-                        el.setAttribute('checked', 'checked');
-                    } else {
-                        el.removeAttribute('checked');
-                    }
-                } else {
-                    // Cria uma div de texto para substituir o input
-                    const divTexto = document.createElement('div');
-                    divTexto.className = 'print-text-box'; // Usa a classe CSS que criamos
-                    
-                    if (tag === 'select') {
-                        divTexto.innerText = originalEl.options[originalEl.selectedIndex]?.text || '';
-                    } else {
-                        divTexto.innerText = originalEl.value;
-                    }
-
-                    // Substitui o input pela div no clone
-                    el.parentNode.replaceChild(divTexto, el);
-                }
-            });
-
-            // 3. Gerar PDF a partir do clone "achatado"
-            try {
-                const canvas = await html2canvas(clone, {
-                    scale: 2, // Alta qualidade
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#ffffff'
-                });
-
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-
-                const imgWidth = 210; // A4 largura total
-                const pageHeight = 295; // A4 altura
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                let heightLeft = imgHeight;
-                let position = 0;
-
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-
-                while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
-
-                pdf.save('Checklist_PortoMais_Final.pdf');
-                
-            } catch (err) {
-                alert('Erro: ' + err.message);
-            } finally {
-                // Remove o clone da memória
-                document.body.removeChild(clone);
+            // Define hora
+            const timeInput = document.getElementById('hora_entrada');
+            if(timeInput) {
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                timeInput.value = `${hours}:${minutes}`;
             }
+        });
+
+        // --- 2. FORÇAR LETRA MAIÚSCULA EM TUDO ---
+        const allInputs = document.querySelectorAll('input[type="text"]');
+        allInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        });
+
+        // --- 3. GERAR PDF ---
+        function gerarPDF() {
+            // Pega o elemento principal
+            const element = document.getElementById('conteudo-vistoria');
+            
+            // Configurações do PDF
+            const opt = {
+                margin:       0.2, // Margem pequena para caber tudo
+                filename:     'checklist_portomais.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 }, // Melhora resolução
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Gera e baixa
+            html2pdf().set(opt).from(element).save();
         }
 
-        function limpar() {
-            if(confirm("Limpar tudo?")) location.reload();
+        // --- 4. LIMPAR FORMULÁRIO ---
+        function limparFormulario() {
+            if(confirm('Tem certeza que deseja limpar todos os campos?')) {
+                // Limpa inputs de texto e numero
+                document.querySelectorAll('input[type="text"], input[type="number"], select').forEach(input => input.value = '');
+                // Limpa checkboxes e radios
+                document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => input.checked = false);
+                // Recarrega a página para pegar a hora atualizada novamente
+                location.reload(); 
+            }
         }
     </script>
 </body>
 </html>
-
