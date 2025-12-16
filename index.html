@@ -19,6 +19,7 @@
         /* HEADER COM LOGO */
         .header { display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #001a4d; padding-bottom: 20px; margin-bottom: 25px; }
         .logo-section { text-align: center; }
+        .logo-img { max-width: 250px; height: auto; margin-bottom: 10px; }
         .header-subtitle { font-size: 14px; color: #555; margin-top: 5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
         /* INFO BAR */
@@ -28,7 +29,7 @@
         .info-header-item input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-weight: 600; }
 
         /* SECTIONS */
-        .section { margin-bottom: 30px; break-inside: avoid; }
+        .section { margin-bottom: 30px; page-break-inside: avoid; }
         .section-title {
             background: linear-gradient(90deg, #001a4d 0%, #003380 100%); color: white;
             padding: 12px 15px; font-size: 15px; font-weight: bold; border-radius: 6px 6px 0 0; 
@@ -82,6 +83,11 @@
             .container { padding: 15px; }
             .info-header { grid-template-columns: 1fr; }
         }
+
+        /* Esconde logo apenas no PDF (não nos botões) */
+        @media print {
+            .logo-img { max-width: 200px; }
+        }
     </style>
 </head>
 <body>
@@ -91,8 +97,7 @@
         <!-- HEADER COM LOGO -->
         <div class="header">
             <div class="logo-section">
-                <!-- Certifique-se que o arquivo logo.png existe na pasta -->
-                <img src="logo.png" alt="Logo Porto Mais" style="max-width: 280px; height: auto; margin-bottom: 5px;">
+                <img id="logo-element" class="logo-img" src="logo.png" alt="Logo Porto Mais">
                 <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
             </div>
         </div>
@@ -323,54 +328,56 @@
         // --- 3. CONFIGURAÇÃO PADRÃO DO PDF ---
         function getPdfOptions() {
             return {
-                margin:       0.2,
+                margin:       0.3,
                 filename:     'vistoria_portomais.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
+                image:        { type: 'jpeg', quality: 0.95 },
+                html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
         }
 
-        // --- 4. FUNÇÃO SALVAR NO DISPOSITIVO (Antiga) ---
+        // --- 4. FUNÇÃO SALVAR NO DISPOSITIVO (PC) ---
         function gerarPDF() {
             const element = document.getElementById('conteudo-vistoria');
-            html2pdf().set(getPdfOptions()).from(element).save();
+            const btn = document.querySelector('.btn-pdf');
+            btn.innerHTML = "⏳ GERANDO...";
+
+            setTimeout(() => {
+                html2pdf().set(getPdfOptions()).from(element).save().then(() => {
+                    btn.innerHTML = "📄 BAIXAR / SALVAR (PC)";
+                });
+            }, 500);
         }
 
-        // --- 5. FUNÇÃO COMPARTILHAR WHATSAPP (Nova) ---
+        // --- 5. FUNÇÃO COMPARTILHAR WHATSAPP ---
         function compartilharPDF() {
             const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-whatsapp');
             const textoOriginal = btn.innerHTML;
             
-            // Avisa o usuário que está carregando
-            btn.innerHTML = "⌛ GERANDO PDF...";
+            btn.innerHTML = "⏳ GERANDO PDF...";
             
-            // Gera o PDF como um arquivo binário (Blob) na memória
-            html2pdf().set(getPdfOptions()).from(element).outputPdf('blob').then(function(blob) {
-                // Cria um arquivo virtual
-                const file = new File([blob], "vistoria_portomais.pdf", { type: "application/pdf" });
+            setTimeout(() => {
+                html2pdf().set(getPdfOptions()).from(element).outputPdf('blob').then(function(blob) {
+                    const file = new File([blob], "vistoria_portomais.pdf", { type: "application/pdf" });
 
-                // Tenta compartilhar usando o sistema nativo do Android/iOS
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        files: [file],
-                        title: 'Vistoria Porto Mais',
-                        text: 'Segue anexo o checklist de vistoria realizado.'
-                    }).then(() => {
-                        console.log('Compartilhado com sucesso');
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: 'Vistoria Porto Mais',
+                            text: 'Segue anexo o checklist de vistoria realizado.'
+                        }).then(() => {
+                            btn.innerHTML = textoOriginal;
+                        }).catch((error) => {
+                            console.log('Erro:', error);
+                            btn.innerHTML = textoOriginal;
+                        });
+                    } else {
+                        alert("Compartilhamento funciona melhor no celular (App). No PC, use o botão de Salvar.");
                         btn.innerHTML = textoOriginal;
-                    }).catch((error) => {
-                        console.log('Erro ao compartilhar:', error);
-                        btn.innerHTML = textoOriginal;
-                    });
-                } else {
-                    // Se estiver no PC ou navegador antigo que não compartilha
-                    alert("Atenção: O compartilhamento direto funciona melhor no celular (App). No computador, o arquivo será baixado.");
-                    gerarPDF(); // Faz o download normal
-                    btn.innerHTML = textoOriginal;
-                }
-            });
+                    }
+                });
+            }, 500);
         }
 
         // --- 6. LIMPAR TUDO ---
