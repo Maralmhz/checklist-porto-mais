@@ -54,24 +54,33 @@
         .radio-label input { margin-right: 4px; accent-color: #e63946; }
 
         /* BOTÕES DE AÇÃO */
-        .actions { margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .actions { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+        
         .btn {
-            flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; 
-            cursor: pointer; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s;
-            display: flex; align-items: center; justify-content: center; min-width: 200px;
+            padding: 18px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; transition: transform 0.2s;
+            display: flex; align-items: center; justify-content: center; width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .btn-pdf { background-color: #001a4d; color: white; box-shadow: 0 4px 10px rgba(0, 26, 77, 0.3); }
-        .btn-pdf:hover { background-color: #002b80; transform: translateY(-2px); }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        .btn-whatsapp:hover { background-color: #128C7E; }
+
+        .btn-pdf { background-color: #001a4d; color: white; }
+        .btn-pdf:hover { background-color: #002b80; }
+
         .btn-clear { background-color: white; color: #e63946; border: 2px solid #e63946; }
         .btn-clear:hover { background-color: #fff0f1; }
 
-        /* Ocultar elementos na impressão/PDF se necessário */
-        .hide-on-print { display: none; }
+        @media (min-width: 600px) {
+            .actions { flex-direction: row; }
+        }
 
         @media (max-width: 600px) {
             .container { padding: 15px; }
             .info-header { grid-template-columns: 1fr; }
-            .btn { width: 100%; }
         }
     </style>
 </head>
@@ -248,7 +257,7 @@
             <div class="section-content">
                 <p style="font-size: 11px; color: #666; margin-bottom: 10px;">LEGENDA: (R) Risco | (A) Amassado | (Q) Quebrado | (F) Falta</p>
                 <div class="form-row">
-                    <div class="form-group"><label>Frente</label><input type="text"></div>
+                    <div class="form-group"><label>Frente/Parachoque</label><input type="text"></div>
                     <div class="form-group"><label>Lat. Esquerda</label><input type="text"></div>
                     <div class="form-group"><label>Lat. Direita</label><input type="text"></div>
                 </div>
@@ -282,22 +291,20 @@
 
         <!-- BOTÕES -->
         <div class="actions" data-html2canvas-ignore="true">
-            <button class="btn btn-pdf" onclick="gerarPDF()">📄 BAIXAR PDF / IMPRIMIR</button>
+            <button class="btn btn-whatsapp" onclick="compartilharPDF()">📱 ENVIAR NO WHATSAPP</button>
+            <button class="btn btn-pdf" onclick="gerarPDF()">📄 BAIXAR / SALVAR (PC)</button>
             <button class="btn btn-clear" onclick="limparFormulario()">🔄 LIMPAR TUDO</button>
         </div>
 
     </div>
 
     <script>
-        // --- 1. CONFIGURAÇÃO DE DATA E HORA AUTOMÁTICA ---
+        // --- 1. DATA E HORA AUTOMÁTICA ---
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
-            
-            // Define data
             const dateInput = document.getElementById('data_entrada');
             if(dateInput) dateInput.valueAsDate = now;
 
-            // Define hora
             const timeInput = document.getElementById('hora_entrada');
             if(timeInput) {
                 const hours = String(now.getHours()).padStart(2, '0');
@@ -306,44 +313,74 @@
             }
         });
 
-        // --- 2. FORÇAR LETRA MAIÚSCULA EM TUDO ---
-        const allInputs = document.querySelectorAll('input[type="text"]');
-        allInputs.forEach(input => {
+        // --- 2. LETRAS MAIÚSCULAS ---
+        document.querySelectorAll('input[type="text"]').forEach(input => {
             input.addEventListener('input', function() {
                 this.value = this.value.toUpperCase();
             });
         });
 
-        // --- 3. GERAR PDF ---
-        function gerarPDF() {
-            // Pega o elemento principal
-            const element = document.getElementById('conteudo-vistoria');
-            
-            // Configurações do PDF
-            const opt = {
-                margin:       0.2, // Margem pequena para caber tudo
-                filename:     'checklist_portomais.pdf',
+        // --- 3. CONFIGURAÇÃO PADRÃO DO PDF ---
+        function getPdfOptions() {
+            return {
+                margin:       0.2,
+                filename:     'vistoria_portomais.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 }, // Melhora resolução
+                html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
-
-            // Gera e baixa
-            html2pdf().set(opt).from(element).save();
         }
 
-        // --- 4. LIMPAR FORMULÁRIO ---
+        // --- 4. FUNÇÃO SALVAR NO DISPOSITIVO (Antiga) ---
+        function gerarPDF() {
+            const element = document.getElementById('conteudo-vistoria');
+            html2pdf().set(getPdfOptions()).from(element).save();
+        }
+
+        // --- 5. FUNÇÃO COMPARTILHAR WHATSAPP (Nova) ---
+        function compartilharPDF() {
+            const element = document.getElementById('conteudo-vistoria');
+            const btn = document.querySelector('.btn-whatsapp');
+            const textoOriginal = btn.innerHTML;
+            
+            // Avisa o usuário que está carregando
+            btn.innerHTML = "⌛ GERANDO PDF...";
+            
+            // Gera o PDF como um arquivo binário (Blob) na memória
+            html2pdf().set(getPdfOptions()).from(element).outputPdf('blob').then(function(blob) {
+                // Cria um arquivo virtual
+                const file = new File([blob], "vistoria_portomais.pdf", { type: "application/pdf" });
+
+                // Tenta compartilhar usando o sistema nativo do Android/iOS
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Vistoria Porto Mais',
+                        text: 'Segue anexo o checklist de vistoria realizado.'
+                    }).then(() => {
+                        console.log('Compartilhado com sucesso');
+                        btn.innerHTML = textoOriginal;
+                    }).catch((error) => {
+                        console.log('Erro ao compartilhar:', error);
+                        btn.innerHTML = textoOriginal;
+                    });
+                } else {
+                    // Se estiver no PC ou navegador antigo que não compartilha
+                    alert("Atenção: O compartilhamento direto funciona melhor no celular (App). No computador, o arquivo será baixado.");
+                    gerarPDF(); // Faz o download normal
+                    btn.innerHTML = textoOriginal;
+                }
+            });
+        }
+
+        // --- 6. LIMPAR TUDO ---
         function limparFormulario() {
             if(confirm('Tem certeza que deseja limpar todos os campos?')) {
-                // Limpa inputs de texto e numero
                 document.querySelectorAll('input[type="text"], input[type="number"], select').forEach(input => input.value = '');
-                // Limpa checkboxes e radios
                 document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => input.checked = false);
-                // Recarrega a página para pegar a hora atualizada novamente
                 location.reload(); 
             }
         }
     </script>
 </body>
 </html>
-
