@@ -4,76 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Checklist Porto Mais</title>
+    <!-- Biblioteca HTML2PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* CSS MANTIDO IGUAL AO ANTERIOR */
+        /* --- ESTILOS GERAIS --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 15px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 10px; }
         
         .container {
-            max-width: 900px; margin: 0 auto; background: white; padding: 20px;
+            max-width: 900px; margin: 0 auto; background: white; padding: 15px;
             border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .header { display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #001a4d; padding-bottom: 15px; margin-bottom: 20px; }
+        /* HEADER */
+        .header { display: flex; justify-content: center; align-items: center; border-bottom: 2px solid #001a4d; padding-bottom: 10px; margin-bottom: 15px; }
         .logo-section { text-align: center; }
-        .logo-img { max-width: 250px; height: auto; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
-        .header-subtitle { font-size: 14px; color: #555; margin-top: 5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        /* Garanta que a logo.png esteja na mesma pasta do arquivo HTML */
+        .logo-img { max-width: 200px; height: auto; margin-bottom: 2px; display: block; margin: 0 auto; }
+        .header-subtitle { font-size: 12px; color: #555; margin-top: 2px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
-        .info-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .info-header-item { background: #f8f9fa; padding: 8px; border-left: 4px solid #001a4d; border-radius: 4px; }
-        .info-header-item label { display: block; font-weight: bold; color: #001a4d; font-size: 11px; margin-bottom: 3px; }
-        .info-header-item input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        /* CAMPOS DE INFORMAÇÃO NO TOPO */
+        .info-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 15px; }
+        .info-header-item { background: #f8f9fa; padding: 6px; border-left: 3px solid #001a4d; border-radius: 4px; }
+        .info-header-item label { display: block; font-weight: bold; color: #001a4d; font-size: 10px; margin-bottom: 2px; }
+        .info-header-item input { width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-weight: 600; font-size: 12px; }
 
-        .section { margin-bottom: 20px; break-inside: avoid; page-break-inside: avoid; }
+        /* SEÇÕES DO FORMULÁRIO */
+        .section { margin-bottom: 12px; break-inside: avoid; } /* Evita quebra de página no meio da seção */
         .section-title {
             background: linear-gradient(90deg, #001a4d 0%, #003380 100%); color: white;
-            padding: 10px; font-size: 14px; font-weight: bold; border-radius: 5px 5px 0 0; 
+            padding: 6px 10px; font-size: 12px; font-weight: bold; border-radius: 4px 4px 0 0; 
             text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .section-content { border: 1px solid #e1e4e8; border-top: none; border-radius: 0 0 5px 5px; padding: 15px; background: #fff; }
+        .section-content { border: 1px solid #e1e4e8; border-top: none; border-radius: 0 0 4px 4px; padding: 10px; background: #fff; }
 
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 10px; }
+        /* GRIDS DE INPUTS */
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 6px; }
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 11px; font-weight: 600; color: #444; margin-bottom: 4px; }
-        .form-group input, .form-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; outline: none; }
+        .form-group label { font-size: 10px; font-weight: 600; color: #444; margin-bottom: 2px; }
+        .form-group input, .form-group select { padding: 6px; border: 1px solid #ddd; border-radius: 3px; font-size: 11px; outline: none; }
         
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
-        .checkbox-item { display: flex; align-items: center; font-size: 12px; color: #333; cursor: pointer; background: #f9f9f9; padding: 8px; border-radius: 4px; }
-        .checkbox-item input { margin-right: 8px; accent-color: #001a4d; transform: scale(1.2); }
-        .radio-group { display: flex; gap: 15px; margin-top: 5px; }
-        .radio-label { display: flex; align-items: center; font-size: 12px; cursor: pointer; }
-        .radio-label input { margin-right: 5px; accent-color: #e63946; transform: scale(1.2); }
+        /* CHECKBOXES & RADIOS */
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 5px; }
+        .checkbox-item { display: flex; align-items: center; font-size: 10px; color: #333; cursor: pointer; background: #f9f9f9; padding: 5px; border-radius: 3px; }
+        .checkbox-item input { margin-right: 5px; accent-color: #001a4d; transform: scale(1.1); }
+        .radio-group { display: flex; gap: 10px; margin-top: 2px; }
+        .radio-label { display: flex; align-items: center; font-size: 10px; cursor: pointer; }
+        .radio-label input { margin-right: 3px; accent-color: #e63946; transform: scale(1.1); }
 
-        .signature-section { margin-top: 20px; display: flex; flex-direction: column; gap: 30px; }
-        .signature-box { width: 100%; }
+        /* --- ASSINATURA OTIMIZADA --- */
+        .signature-section { margin-top: 10px; display: flex; flex-direction: column; gap: 15px; }
+        .signature-box { width: 100%; break-inside: avoid; } /* Não quebra a caixa */
         .signature-wrapper {
-            position: relative; width: 100%; height: 300px;
-            border: 2px dashed #999; background-color: #fcfcfc; border-radius: 8px;
+            position: relative; width: 100%; height: 180px; /* Altura equilibrada para PC e Celular */
+            border: 2px dashed #999; background-color: #fcfcfc; border-radius: 6px;
             touch-action: none; 
         }
         canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
         .clear-sig {
-            position: absolute; top: 10px; right: 10px;
+            position: absolute; top: 5px; right: 5px;
             background: #ffe6e6; color: #d8000c; border: 1px solid #d8000c;
-            border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: bold; cursor: pointer; z-index: 10;
+            border-radius: 3px; padding: 2px 6px; font-size: 10px; font-weight: bold; cursor: pointer; z-index: 10;
         }
 
-        .actions { margin-top: 30px; display: flex; gap: 15px; justify-content: center; padding-bottom: 30px; }
+        /* BOTÕES */
+        .actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; padding-bottom: 20px; }
         .btn {
-            padding: 18px 25px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; 
-            cursor: pointer; text-transform: uppercase; color: white; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 15px 20px; border: none; border-radius: 5px; font-size: 14px; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; color: white; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
         }
         .btn-save { background-color: #001a4d; width: 100%; justify-content: center; }
         .btn-clear { background-color: #fff; color: #e63946; border: 2px solid #e63946; width: auto; }
 
+        /* AJUSTES PARA PDF (PRINT) */
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
             .actions, .clear-sig { display: none !important; }
-            .signature-wrapper { border: 1px solid #000; height: 180px; }
+            .signature-wrapper { border: 1px solid #000; height: 150px; } /* Menor no PDF pra economizar papel */
         }
     </style>
 </head>
@@ -83,19 +93,18 @@
         
         <div class="header">
             <div class="logo-section">
+                <!-- Se a logo não aparecer no APK, converta para Base64 -->
                 <img src="logo.png" class="logo-img" alt="Logo Porto Mais" crossorigin="anonymous">
                 <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
             </div>
         </div>
 
-        <!-- INFO -->
         <div class="info-header">
             <div class="info-header-item"><label>Data Entrada</label><input type="date" id="data_entrada"></div>
             <div class="info-header-item"><label>Hora Entrada</label><input type="time" id="hora_entrada"></div>
             <div class="info-header-item"><label>Nº Sinistro/Evento</label><input type="text" placeholder="Ex: 12345"></div>
         </div>
 
-        <!-- DADOS -->
         <div class="section">
             <div class="section-title">📍 DADOS DA OFICINA / RESPONSÁVEL</div>
             <div class="section-content">
@@ -151,7 +160,7 @@
                     <label class="checkbox-item"><input type="checkbox"> Extintor</label>
                     <label class="checkbox-item"><input type="checkbox"> Multimídia/Som</label>
                 </div>
-                <div class="form-group" style="margin-top: 15px;">
+                <div class="form-group" style="margin-top: 8px;">
                     <label>Observações:</label><input type="text" placeholder="Avarias prévias...">
                 </div>
             </div>
@@ -184,7 +193,7 @@
         <div class="section">
             <div class="section-title">⚠️ AVARIAS PRÉ-EXISTENTES</div>
             <div class="section-content">
-                <p style="font-size: 10px; color: #666;">LEGENDA: (R) Risco | (A) Amassado | (Q) Quebrado | (F) Falta</p>
+                <p style="font-size: 9px; color: #666; margin-bottom: 4px;">LEGENDA: (R) Risco | (A) Amassado | (Q) Quebrado | (F) Falta</p>
                 <div class="form-row"><div class="form-group"><label>Frente</label><input type="text"></div><div class="form-group"><label>Lat. Esq</label><input type="text"></div><div class="form-group"><label>Lat. Dir</label><input type="text"></div></div>
                 <div class="form-row"><div class="form-group"><label>Traseira</label><input type="text"></div><div class="form-group"><label>Teto</label><input type="text"></div><div class="form-group"><label>Interno</label><input type="text"></div></div>
             </div>
@@ -193,23 +202,24 @@
         <div class="section">
             <div class="section-title">📋 AUTORIZAÇÃO E ASSINATURAS</div>
             <div class="section-content">
-                <p style="font-size: 12px; margin-bottom: 20px;">Declaro que os pertences foram conferidos e autorizo a desmontagem/reparo.</p>
+                <p style="font-size: 11px; margin-bottom: 10px;">Declaro que os pertences foram conferidos e autorizo a desmontagem/reparo.</p>
                 <div class="signature-section">
                     <div class="signature-box">
-                        <label style="font-weight: bold; margin-bottom: 5px; display: block;">Assinatura do Responsável</label>
+                        <label style="font-weight: bold; margin-bottom: 5px; display: block; font-size: 11px;">Assinatura do Responsável</label>
                         <div class="signature-wrapper"><canvas id="sig-responsible"></canvas><button class="clear-sig" onclick="clearSig('sig-responsible')">LIMPAR 🗑️</button></div>
                     </div>
                     <div class="signature-box">
-                        <label style="font-weight: bold; margin-bottom: 5px; display: block;">Assinatura do Cliente</label>
+                        <label style="font-weight: bold; margin-bottom: 5px; display: block; font-size: 11px;">Assinatura do Cliente</label>
                         <div class="signature-wrapper"><canvas id="sig-client"></canvas><button class="clear-sig" onclick="clearSig('sig-client')">LIMPAR 🗑️</button></div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- BOTÕES OCULTOS NA IMPRESSÃO -->
         <div class="actions" data-html2canvas-ignore="true">
             <button class="btn btn-save" onclick="baixarPDF()">
-                <span id="btn-text">💾 SALVAR NO DISPOSITIVO</span>
+                <span id="btn-text">💾 SALVAR / BAIXAR</span>
             </button>
             <button class="btn btn-clear" onclick="limparFormulario()">🗑️ LIMPAR</button>
         </div>
@@ -217,6 +227,7 @@
     </div>
 
     <script>
+        // CONFIGURAÇÕES INICIAIS
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
             const dateInput = document.getElementById('data_entrada');
@@ -234,6 +245,7 @@
             }, 300);
         });
 
+        // LÓGICA DE ASSINATURA (CANVAS)
         function initSignaturePad(canvasId) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
@@ -245,7 +257,7 @@
                 canvas.width = rect.width * ratio;
                 canvas.height = rect.height * ratio;
                 ctx.scale(ratio, ratio);
-                ctx.lineWidth = 4; 
+                ctx.lineWidth = 3; 
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round'; 
                 ctx.strokeStyle = '#000';
@@ -285,7 +297,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
-        // --- LÓGICA SIMPLES (QUE FUNCIONA EM APK) ---
+        // --- LÓGICA DE DOWNLOAD ROBUSTA PARA APK E PC ---
         function baixarPDF() {
             const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-save');
@@ -298,32 +310,47 @@
                 return; 
             }
 
-            // NOME: Checklist_PLACA.pdf
             const placaFormatada = placaInput.replace(/\s+/g, '').toUpperCase();
             const fileName = `Checklist_${placaFormatada}.pdf`;
 
             btn.innerHTML = "⏳ GERANDO...";
 
+            // Configuração para evitar buracos na página
             const opt = {
                 margin:       0.2,
                 filename:     fileName,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+                pagebreak:    { mode: 'css' } 
             };
 
-            // USA APENAS O .save() PADRÃO (É o mais compatível com WebView)
-            setTimeout(() => {
-                html2pdf().set(opt).from(element).save().then(() => {
-                    btn.innerHTML = `<span id="btn-text">✅ SALVO!</span>`;
-                    setTimeout(() => btn.innerHTML = `<span id="btn-text">${originalText}</span>`, 2000);
-                }).catch(err => {
-                    console.error(err);
-                    alert("Erro ao salvar.");
-                    btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
-                });
-            }, 500);
+            // USA 'datauristring' PARA FORÇAR O DOWNLOAD NO ANDROID
+            html2pdf().set(opt).from(element).outputPdf('datauristring').then(function(pdfAsString) {
+                
+                // CRIA UM LINK INVISÍVEL
+                // Essa técnica ajuda o Android a entender que é um download real
+                const link = document.createElement('a');
+                link.href = pdfAsString;
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                
+                // CLICA NO LINK
+                link.click();
+                
+                // REMOVE O LINK
+                document.body.removeChild(link);
+                
+                // FEEDBACK
+                btn.innerHTML = `<span id="btn-text">✅ SALVO!</span>`;
+                setTimeout(() => btn.innerHTML = `<span id="btn-text">${originalText}</span>`, 3000);
+
+            }).catch(err => {
+                console.error(err);
+                alert("Erro ao salvar: " + err.message);
+                btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
+            });
         }
 
         function limparFormulario() {
