@@ -254,7 +254,6 @@
                 ctx.lineJoin = 'round'; 
                 ctx.strokeStyle = '#000';
             }
-            
             resizeCanvas();
 
             function getPos(e) {
@@ -290,7 +289,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
-        // --- LÓGICA INTELIGENTE DE SALVAR/COMPARTILHAR ---
+        // --- LÓGICA INTELIGENTE (CORRIGIDA) ---
         function processarDocumento() {
             const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-save');
@@ -315,29 +314,29 @@
                 pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            // Gera o PDF como Blob (Arquivo em memória)
+            // Detecta se é CELULAR (Android/iPhone)
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
             html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
                 
-                // 1. TENTA COMPARTILHAR (CELULAR)
-                const file = new File([pdfBlob], fileName, { type: "application/pdf" });
-
-                // Verifica se o navegador suporta compartilhamento de arquivos
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                // FLUXO: SÓ ABRE O MENU COMPARTILHAR SE FOR CELULAR
+                if (isMobile && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: "application/pdf" })] })) {
+                    
+                    const file = new File([pdfBlob], fileName, { type: "application/pdf" });
                     navigator.share({
                         files: [file],
                         title: 'Vistoria Porto Mais',
                         text: `Segue vistoria do veículo ${placa}`
                     }).then(() => {
-                        console.log('Compartilhado com sucesso');
                         btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
                     }).catch((error) => {
-                        console.log('Cancelado ou Erro:', error);
+                        console.log('Erro share:', error);
                         btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
                     });
-                
+
                 } else {
-                    // 2. SE NÃO SUPORTAR (PC), FAZ DOWNLOAD DIRETO
-                    // No PC, o navegador cuida de perguntar onde salvar (se configurado)
+                    // SE FOR PC (OU CELULAR VELHO), BAIXA DIRETO
+                    // Isso evita a janela de compartilhamento do Windows 10/11
                     const url = URL.createObjectURL(pdfBlob);
                     const a = document.createElement('a');
                     a.href = url;
