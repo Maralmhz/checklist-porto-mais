@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist Porto Mais - Vistoria</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Checklist Porto Mais</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -45,6 +45,7 @@
         .radio-label { display: flex; align-items: center; font-size: 12px; cursor: pointer; }
         .radio-label input { margin-right: 5px; accent-color: #e63946; transform: scale(1.2); }
 
+        /* ASSINATURA */
         .signature-section { margin-top: 20px; display: flex; flex-direction: column; gap: 30px; }
         .signature-box { width: 100%; }
         .signature-wrapper {
@@ -206,7 +207,7 @@
 
         <div class="actions" data-html2canvas-ignore="true">
             <button class="btn btn-save" onclick="processarDocumento()">
-                <span id="btn-text">💾 SALVAR / COMPARTILHAR</span>
+                <span id="btn-text">💾 FINALIZAR / COMPARTILHAR</span>
             </button>
             <button class="btn btn-clear" onclick="limparFormulario()">🗑️ LIMPAR</button>
         </div>
@@ -282,7 +283,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
-        // --- SALVAR + COMPARTILHAR ---
+        // --- LÓGICA DEFINITIVA: MOBILE = SHARE / PC = DOWNLOAD ---
         function processarDocumento() {
             const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-save');
@@ -295,11 +296,11 @@
                 return; 
             }
 
-            // NOME CORRIGIDO: Checklist_PLACA
+            // NOME: Checklist_PLACA
             const placaFormatada = placaInput.replace(/\s+/g, '').toUpperCase();
             const fileName = `Checklist_${placaFormatada}.pdf`;
 
-            btn.innerHTML = "⏳ PROCESSANDO...";
+            btn.innerHTML = "⏳ GERANDO...";
 
             const opt = {
                 margin:       0.2,
@@ -314,38 +315,55 @@
 
             html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
                 
-                // 1. SEMPRE FORÇA O DOWNLOAD (PC ou Mobile - Backup)
-                const url = URL.createObjectURL(pdfBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click(); // Dispara o download
-                document.body.removeChild(a);
-
-                // 2. SE FOR CELULAR, TENTA ABRIR O MENU DE COMPARTILHAR DEPOIS
+                // FLUXO CELULAR: FORÇA O COMPARTILHAMENTO
                 if (isMobile && navigator.canShare) {
                     const file = new File([pdfBlob], fileName, { type: "application/pdf" });
                     
                     if (navigator.canShare({ files: [file] })) {
-                        setTimeout(() => {
-                            navigator.share({
-                                files: [file],
-                                title: 'Vistoria Porto Mais',
-                                text: `Checklist do veículo ${placaFormatada}`
-                            }).catch((err) => console.log('Compartilhamento fechado ou erro:', err));
-                        }, 500); // Pequeno delay para garantir que o download comece antes
+                        navigator.share({
+                            files: [file],
+                            title: 'Vistoria Porto Mais',
+                            text: `Segue checklist do veículo ${placaFormatada}`
+                        }).then(() => {
+                            btn.innerHTML = `<span id="btn-text">✅ ENVIADO!</span>`;
+                            setTimeout(() => btn.innerHTML = `<span id="btn-text">${originalText}</span>`, 3000);
+                        }).catch((err) => {
+                            console.log('Erro share:', err);
+                            // Fallback se o usuário cancelar ou der erro no share
+                            abrirFallback(pdfBlob, fileName);
+                            btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
+                        });
+                    } else {
+                         // Se não suportar arquivos no share, usa fallback
+                         abrirFallback(pdfBlob, fileName);
+                         btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
                     }
+                } 
+                // FLUXO PC: DOWNLOAD DIRETO
+                else {
+                    const url = URL.createObjectURL(pdfBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
                 }
-
-                btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
-                URL.revokeObjectURL(url);
 
             }).catch(err => {
                 console.error(err);
                 alert("Erro ao gerar PDF.");
                 btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
             });
+        }
+
+        // Caso o compartilhamento falhe no celular, abre em nova aba para salvar manualmente
+        function abrirFallback(blob, fileName) {
+            alert("Não foi possível abrir o menu de compartilhamento. O PDF será aberto para você salvar manualmente.");
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
         }
 
         function limparFormulario() {
