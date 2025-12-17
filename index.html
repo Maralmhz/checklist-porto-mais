@@ -6,297 +6,585 @@
     <meta name="theme-color" content="#001a4d">
     <title>Checklist Porto Mais</title>
     
+    <!-- Ícone para Tela Inicial (Favicon) -->
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- Biblioteca HTML2PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
-        /* --- ESTILOS VISUAIS --- */
-        :root { --primary: #001a4d; --secondary: #003380; --accent: #e63946; --bg: #f4f6f9; --surface: #ffffff; --text: #333; --border: #e0e0e0; --success: #28a745; }
+        /* --- RESET & BASE --- */
+        :root {
+            --primary: #001a4d;
+            --secondary: #003380;
+            --accent: #e63946;
+            --bg: #f4f6f9;
+            --surface: #ffffff;
+            --text: #333;
+            --border: #e0e0e0;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: sans-serif; background-color: var(--bg); color: var(--text); padding: 15px; line-height: 1.4; }
         
-        .container { max-width: 800px; margin: 0 auto; background: var(--surface); padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text);
+            padding: 15px;
+            line-height: 1.4;
+        }
         
-        /* Cabeçalho */
-        .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 25px; }
-        .logo-img { max-width: 180px; height: auto; margin: 0 auto 8px; display: block; }
-        .header-subtitle { font-size: 13px; color: #666; font-weight: 700; text-transform: uppercase; }
+        /* Container Principal com efeito de Cartão */
+        .container {
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: var(--surface); 
+            padding: 25px;
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
 
-        /* Inputs de Topo */
-        .info-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 25px; }
-        .info-item { background: #f8f9fb; padding: 8px 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
-        .info-item label { display: block; font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
-        .info-item input { width: 100%; border: none; background: transparent; font-weight: 600; font-size: 14px; outline: none; }
+        /* --- HEADER --- */
+        .header { 
+            text-align: center; 
+            border-bottom: 2px solid var(--primary); 
+            padding-bottom: 20px; 
+            margin-bottom: 25px; 
+        }
+        
+        .logo-img { 
+            max-width: 180px; 
+            height: auto; 
+            display: block; 
+            margin: 0 auto 8px; 
+        }
+        
+        .header-subtitle { 
+            font-size: 13px; 
+            color: #666; 
+            font-weight: 700; 
+            letter-spacing: 1.2px; 
+            text-transform: uppercase; 
+        }
 
-        /* Seções */
-        .section { margin-bottom: 20px; }
-        .section-title { background: var(--primary); color: white; padding: 10px 15px; font-size: 13px; font-weight: 600; border-radius: 8px 8px 0 0; text-transform: uppercase; }
-        .section-content { border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 15px; background: #fff; }
+        /* --- INFO BAR (Data/Hora) --- */
+        .info-header { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+            gap: 12px; 
+            margin-bottom: 25px; 
+        }
+        
+        .info-item { 
+            background: #f8f9fb; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            border-left: 4px solid var(--primary); 
+        }
+        
+        .info-item label { 
+            display: block; 
+            font-size: 10px; 
+            font-weight: 700; 
+            color: var(--primary); 
+            text-transform: uppercase; 
+            margin-bottom: 4px;
+        }
+        
+        .info-item input { 
+            width: 100%; 
+            border: none; 
+            background: transparent; 
+            font-weight: 600; 
+            font-size: 14px; 
+            color: var(--text); 
+            outline: none; 
+        }
 
-        /* Formulários */
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        /* --- SEÇÕES --- */
+        .section { margin-bottom: 20px; break-inside: avoid; }
+        
+        .section-title {
+            background: var(--primary); 
+            color: white;
+            padding: 10px 15px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            border-radius: 8px 8px 0 0; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        
+        .section-content { 
+            border: 1px solid var(--border); 
+            border-top: none; 
+            border-radius: 0 0 8px 8px; 
+            padding: 15px; 
+            background: #fff; 
+        }
+
+        /* --- FORMULÁRIOS --- */
+        .form-row { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 15px; 
+        }
+        
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 11px; font-weight: 600; color: #555; margin-bottom: 5px; }
-        .form-group input, .form-group select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; outline: none; width: 100%; }
-        .form-group input:focus { border-color: var(--primary); }
+        
+        .form-group label { 
+            font-size: 11px; 
+            font-weight: 600; 
+            color: #555; 
+            margin-bottom: 6px; 
+        }
+        
+        .form-group input, .form-group select { 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            outline: none; 
+            transition: border-color 0.2s; 
+            background: #fff;
+        }
+        
+        .form-group input:focus, .form-group select:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 2px rgba(0, 26, 77, 0.1); 
+        }
 
-        /* Checkbox e Radio */
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
-        .checkbox-item { display: flex; align-items: center; font-size: 12px; background: #f8f9fa; padding: 10px; border-radius: 6px; cursor: pointer; }
-        .checkbox-item input { margin-right: 8px; transform: scale(1.2); }
-        .radio-group { display: flex; gap: 15px; }
+        /* --- CHECKBOXES (Estilo Botão) --- */
+        .checkbox-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+            gap: 8px; 
+        }
+        
+        .checkbox-item { 
+            display: flex; 
+            align-items: center; 
+            font-size: 12px; 
+            color: #444; 
+            cursor: pointer; 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 6px; 
+            border: 1px solid transparent; 
+            transition: all 0.2s; 
+        }
+        
+        .checkbox-item:hover { background: #eef2f7; }
+        .checkbox-item input { margin-right: 8px; accent-color: var(--primary); transform: scale(1.2); }
+
+        /* --- RADIOS --- */
+        .radio-group { display: flex; gap: 15px; margin-top: 4px; }
         .radio-label { display: flex; align-items: center; font-size: 12px; cursor: pointer; }
-        .radio-label input { margin-right: 5px; }
+        .radio-label input { margin-right: 6px; accent-color: var(--accent); transform: scale(1.2); }
 
-        /* Assinatura */
-        .signature-wrapper { position: relative; width: 100%; height: 180px; border: 2px dashed #bbb; background: #fafafa; border-radius: 8px; touch-action: none; }
-        canvas { display: block; width: 100%; height: 100%; }
-        .clear-sig { position: absolute; top: 5px; right: 5px; background: #fff; border: 1px solid red; color: red; font-size: 10px; padding: 2px 8px; cursor: pointer; }
+        /* --- ASSINATURA --- */
+        .signature-section { margin-top: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .signature-box { width: 100%; }
+        
+        .signature-wrapper {
+            position: relative; 
+            width: 100%; 
+            height: 180px; 
+            border: 2px dashed #bbb; 
+            background-color: #fafafa; 
+            border-radius: 8px;
+            touch-action: none; 
+            overflow: hidden;
+        }
+        
+        canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+        
+        .clear-sig {
+            position: absolute; top: 8px; right: 8px;
+            background: #fff0f0; color: var(--accent); border: 1px solid var(--accent);
+            border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; 
+            cursor: pointer; z-index: 10;
+            transition: background 0.2s;
+        }
+        .clear-sig:hover { background: var(--accent); color: white; }
 
-        /* Botões */
-        .actions { margin-top: 30px; display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
-        .btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; color: white; }
-        .btn-save { background: var(--primary); }
-        .btn-clear { background: white; color: red; border: 1px solid red; }
+        /* --- BOTÕES DE AÇÃO --- */
+        .actions { 
+            margin-top: 30px; 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 15px; 
+            padding-bottom: 20px; 
+        }
+        
+        .btn {
+            padding: 16px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        
+        .btn:active { transform: scale(0.98); }
+        
+        .btn-save { 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
+            color: white; 
+            box-shadow: 0 4px 10px rgba(0, 26, 77, 0.3);
+        }
+        
+        .btn-clear { 
+            background: white; 
+            color: var(--accent); 
+            border: 2px solid var(--accent); 
+        }
 
-        /* Auto Save Status */
-        #status-save { position: fixed; top: 10px; right: 10px; background: var(--success); color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; opacity: 0; transition: opacity 0.5s; }
-
+        /* --- IMPRESSÃO / PDF --- */
         @media print {
-            .actions, .clear-sig, #status-save { display: none; }
-            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; border-radius: 0; }
+            .actions, .clear-sig { display: none !important; }
+            .section { break-inside: avoid; page-break-inside: avoid; }
+            .signature-wrapper { border: 1px solid #000; background: none; height: 140px; }
+            .section-title { color: black; background: #eee; border: 1px solid #ddd; -webkit-print-color-adjust: exact; }
+        }
+
+        /* Ajuste Mobile para Botões */
+        @media (max-width: 600px) {
+            .actions { grid-template-columns: 1fr; }
+            .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div id="status-save">💾 Salvo</div>
-
     <div class="container" id="conteudo-vistoria">
+        
         <!-- HEADER -->
         <div class="header">
-            <!-- Se a imagem não carregar, ela some sem quebrar o layout -->
-            <img src="logo.png" class="logo-img" alt="Logo Porto Mais" onerror="this.style.display='none'"> 
-            <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
+            <div class="logo-section">
+                <img src="logo.png" class="logo-img" alt="Logo Porto Mais" crossorigin="anonymous">
+                <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
+            </div>
         </div>
 
-        <!-- INFO -->
+        <!-- INFO BAR -->
         <div class="info-header">
-            <div class="info-item"><label>Data</label><input type="date" id="data_entrada"></div>
-            <div class="info-item"><label>Hora</label><input type="time" id="hora_entrada"></div>
-            <div class="info-item"><label>Nº Evento</label><input type="text" id="n_sinistro" placeholder="0000"></div>
+            <div class="info-item">
+                <label>Data Entrada</label>
+                <input type="date" id="data_entrada">
+            </div>
+            <div class="info-item">
+                <label>Hora Entrada</label>
+                <input type="time" id="hora_entrada">
+            </div>
+            <div class="info-item">
+                <label>Nº Sinistro/Evento</label>
+                <input type="text" placeholder="Digite..." inputmode="numeric">
+            </div>
         </div>
 
-        <!-- OFICINA -->
+        <!-- SEÇÃO 1 -->
         <div class="section">
-            <div class="section-title">📍 OFICINA</div>
+            <div class="section-title">📍 DADOS DA OFICINA / RESPONSÁVEL</div>
             <div class="section-content">
                 <div class="form-row">
-                    <div class="form-group"><label>Nome da Oficina</label><input type="text" id="oficina_nome"></div>
-                    <div class="form-group"><label>Consultor</label><input type="text" id="consultor_nome"></div>
+                    <div class="form-group">
+                        <label>Oficina/Local</label>
+                        <input type="text" placeholder="Nome da Oficina">
+                    </div>
+                    <div class="form-group">
+                        <label>Consultor Técnico</label>
+                        <input type="text" placeholder="Nome do Responsável">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- CLIENTE -->
+        <!-- SEÇÃO 2 -->
         <div class="section">
-            <div class="section-title">👤 CLIENTE</div>
+            <div class="section-title">👤 DADOS DO CLIENTE</div>
             <div class="section-content">
                 <div class="form-row">
-                    <div class="form-group"><label>Tipo</label><select id="tipo_cliente"><option>Associado</option><option>Terceiro</option></select></div>
-                    <div class="form-group"><label>Nome</label><input type="text" id="nome_cliente"></div>
+                    <div class="form-group">
+                        <label>Tipo de Cliente</label>
+                        <select>
+                            <option>Associado Porto Mais</option>
+                            <option>Terceiro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome Completo</label>
+                        <input type="text" placeholder="Nome do Cliente">
+                    </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>CPF/CNPJ</label><input type="text" id="cpf_cliente" oninput="maskCPF(this)" maxlength="18"></div>
-                    <div class="form-group"><label>Telefone</label><input type="text" id="tel_cliente" oninput="maskPhone(this)" maxlength="15"></div>
+                    <div class="form-group">
+                        <label>CPF/CNPJ</label>
+                        <input type="text" placeholder="000.000.000-00" inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone/WhatsApp</label>
+                        <input type="text" placeholder="(00) 00000-0000" inputmode="tel">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- VEICULO -->
+        <!-- SEÇÃO 3 -->
         <div class="section">
-            <div class="section-title">🚗 VEÍCULO</div>
+            <div class="section-title">🚗 IDENTIFICAÇÃO DO VEÍCULO</div>
             <div class="section-content">
                 <div class="form-row">
-                    <div class="form-group"><label>Modelo</label><input type="text" id="modelo_veic"></div>
-                    <div class="form-group"><label>Placa</label><input type="text" id="placa_veiculo" oninput="maskPlaca(this)" maxlength="8"></div>
-                    <div class="form-group"><label>Cor</label><input type="text" id="cor_veic"></div>
+                    <div class="form-group"><label>Modelo/Versão</label><input type="text" placeholder="Ex: Gol 1.6"></div>
+                    <div class="form-group"><label>Placa</label><input type="text" id="placa_veiculo" placeholder="ABC-1234"></div>
+                    <div class="form-group"><label>Cor</label><input type="text"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Combustível</label><select id="combustivel_veic"><option>Reserva</option><option>1/4</option><option>1/2</option><option>3/4</option><option>Cheio</option></select></div>
-                    <div class="form-group"><label>KM</label><input type="number" id="km_veic"></div>
+                    <div class="form-group"><label>Chassi (4 últimos)</label><input type="text" placeholder="XXXX"></div>
+                    <div class="form-group"><label>KM Atual</label><input type="number" placeholder="00000"></div>
+                    <div class="form-group">
+                        <label>Combustível</label>
+                        <select>
+                            <option>Reserva</option>
+                            <option>1/4</option>
+                            <option>1/2</option>
+                            <option>3/4</option>
+                            <option>Cheio</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- CHECKLIST -->
+        <!-- SEÇÃO 4 -->
         <div class="section">
-            <div class="section-title">✅ CHECKLIST</div>
+            <div class="section-title">✅ INVENTÁRIO (CHECKLIST)</div>
             <div class="section-content">
                 <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox" id="chk_chave_roda"> Chave Roda</label>
-                    <label class="checkbox-item"><input type="checkbox" id="chk_macaco"> Macaco</label>
-                    <label class="checkbox-item"><input type="checkbox" id="chk_triangulo"> Triângulo</label>
-                    <label class="checkbox-item"><input type="checkbox" id="chk_estepe"> Estepe</label>
-                    <label class="checkbox-item"><input type="checkbox" id="chk_manual"> Manual</label>
-                    <label class="checkbox-item"><input type="checkbox" id="chk_som"> Multimídia</label>
+                    <label class="checkbox-item"><input type="checkbox"> Chave de Roda</label>
+                    <label class="checkbox-item"><input type="checkbox"> Macaco</label>
+                    <label class="checkbox-item"><input type="checkbox"> Triângulo</label>
+                    <label class="checkbox-item"><input type="checkbox"> Estepe</label>
+                    <label class="checkbox-item"><input type="checkbox"> Antena</label>
+                    <label class="checkbox-item"><input type="checkbox"> Tapetes</label>
+                    <label class="checkbox-item"><input type="checkbox"> Manual</label>
+                    <label class="checkbox-item"><input type="checkbox"> Chave Reserva</label>
+                    <label class="checkbox-item"><input type="checkbox"> Extintor</label>
+                    <label class="checkbox-item"><input type="checkbox"> Multimídia</label>
                 </div>
-                <div class="form-group" style="margin-top:10px"><label>Obs. Pertences</label><input type="text" id="obs_pertences"></div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Observações de Pertences:</label>
+                    <input type="text" placeholder="Ex: Estepe furado, som original...">
+                </div>
             </div>
         </div>
 
-        <!-- AVARIAS -->
+        <!-- SEÇÃO 5 -->
         <div class="section">
-            <div class="section-title">⚠️ AVARIAS</div>
+            <div class="section-title">🛞 PNEUS E ESTADO GERAL</div>
             <div class="section-content">
                 <div class="form-row">
-                    <div class="form-group"><label>Frente</label><input type="text" id="avaria_frente"></div>
-                    <div class="form-group"><label>Traseira</label><input type="text" id="avaria_traseira"></div>
+                    <div class="form-group">
+                        <label>Pneus Dianteiros</label>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="pneu_diant" value="Bom"> Bom</label>
+                            <label class="radio-label"><input type="radio" name="pneu_diant" value="Ruim"> Ruim</label>
+                            <label class="radio-label"><input type="radio" name="pneu_diant" value="Irregular"> Irregular</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Pneus Traseiros</label>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="pneu_tras" value="Bom"> Bom</label>
+                            <label class="radio-label"><input type="radio" name="pneu_tras" value="Ruim"> Ruim</label>
+                            <label class="radio-label"><input type="radio" name="pneu_tras" value="Irregular"> Irregular</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Lat. Esq</label><input type="text" id="avaria_esq"></div>
-                    <div class="form-group"><label>Lat. Dir</label><input type="text" id="avaria_dir"></div>
-                </div>
+            </div>
+        </div>
+        
+        <!-- SEÇÃO 6 -->
+        <div class="section">
+            <div class="section-title">⚠️ AVARIAS PRÉ-EXISTENTES</div>
+            <div class="section-content">
+                <p style="font-size: 10px; color: #888; margin-bottom: 8px; font-weight: 500;">LEGENDA: (R) Risco | (A) Amassado | (Q) Quebrado | (F) Falta</p>
+                <div class="form-row"><div class="form-group"><label>Frente</label><input type="text"></div><div class="form-group"><label>Lat. Esq</label><input type="text"></div><div class="form-group"><label>Lat. Dir</label><input type="text"></div></div>
+                <div class="form-row"><div class="form-group"><label>Traseira</label><input type="text"></div><div class="form-group"><label>Teto</label><input type="text"></div><div class="form-group"><label>Interno</label><input type="text"></div></div>
             </div>
         </div>
 
         <!-- ASSINATURAS -->
         <div class="section">
-            <div class="section-title">✍️ ASSINATURAS</div>
+            <div class="section-title">📋 AUTORIZAÇÃO E ASSINATURAS</div>
             <div class="section-content">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Responsável Porto Mais</label>
-                        <div class="signature-wrapper"><canvas id="sig-resp"></canvas><button class="clear-sig" onclick="clearSig('sig-resp')">X</button></div>
+                <p style="font-size: 11px; margin-bottom: 15px; color: #444;">Declaro que os pertences foram conferidos e autorizo a desmontagem/reparo do veículo descrito acima.</p>
+                
+                <div class="signature-section">
+                    <div class="signature-box">
+                        <label style="font-weight: 700; font-size: 11px; color: var(--primary); margin-bottom: 5px; display: block;">ASSINATURA DO RESPONSÁVEL</label>
+                        <div class="signature-wrapper">
+                            <canvas id="sig-responsible"></canvas>
+                            <button class="clear-sig" onclick="clearSig('sig-responsible')">LIMPAR 🗑️</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Cliente</label>
-                        <div class="signature-wrapper"><canvas id="sig-cli"></canvas><button class="clear-sig" onclick="clearSig('sig-cli')">X</button></div>
+                    
+                    <div class="signature-box">
+                        <label style="font-weight: 700; font-size: 11px; color: var(--primary); margin-bottom: 5px; display: block;">ASSINATURA DO CLIENTE</label>
+                        <div class="signature-wrapper">
+                            <canvas id="sig-client"></canvas>
+                            <button class="clear-sig" onclick="clearSig('sig-client')">LIMPAR 🗑️</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- BOTOES -->
+        <!-- BOTÕES -->
         <div class="actions" data-html2canvas-ignore="true">
-            <button class="btn btn-save" onclick="baixarPDF()">💾 SALVAR PDF</button>
-            <button class="btn btn-clear" onclick="limparTudo()">🗑️ LIMPAR</button>
+            <button class="btn btn-save" onclick="baixarPDF()">
+                <span id="btn-text">💾 SALVAR PDF</span>
+            </button>
+            <button class="btn btn-clear" onclick="limparFormulario()">
+                🗑️ LIMPAR TUDO
+            </button>
         </div>
+
     </div>
 
-    <!-- CARREGAR BIBLIOTECA NO FINAL PARA NÃO TRAVAR A TELA -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <script>
-        // --- INICIALIZAÇÃO ---
-        document.addEventListener("DOMContentLoaded", () => {
-            // Data Automática
-            if(!localStorage.getItem('checklist_data_entrada')) {
-                const now = new Date();
-                document.getElementById('data_entrada').valueAsDate = now;
-                document.getElementById('hora_entrada').value = now.toTimeString().substring(0,5);
-            }
+        // CONFIGURAÇÃO INICIAL
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data e Hora Automáticas
+            const now = new Date();
+            const dateInput = document.getElementById('data_entrada');
+            if(dateInput) dateInput.valueAsDate = now;
             
-            // Assinaturas
-            initSig('sig-resp');
-            initSig('sig-cli');
-            
-            // Carregar dados salvos
-            loadData();
-            
-            // Ativar Auto-Save
-            document.querySelectorAll('input, select').forEach(el => {
-                el.addEventListener('input', (e) => {
-                    if(e.target.type==='text') e.target.value = e.target.value.toUpperCase();
-                    saveData(e.target);
-                });
+            const timeInput = document.getElementById('hora_entrada');
+            if(timeInput) timeInput.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+            // Caixa Alta Automática
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
             });
+
+            // Delay para carregar Canvas corretamente
+            setTimeout(() => {
+                initSignaturePad('sig-responsible');
+                initSignaturePad('sig-client');
+            }, 300);
         });
 
         // --- SISTEMA DE ASSINATURA ---
-        function initSig(id) {
-            const c = document.getElementById(id);
-            const ctx = c.getContext('2d');
+        function initSignaturePad(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
             let drawing = false;
 
-            function resize() {
-                const rect = c.getBoundingClientRect();
-                c.width = rect.width; c.height = rect.height;
-                ctx.lineWidth = 2; ctx.strokeStyle = "#001a4d";
+            function resizeCanvas() {
+                const rect = canvas.getBoundingClientRect();
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = rect.width * ratio;
+                canvas.height = rect.height * ratio;
+                ctx.scale(ratio, ratio);
+                ctx.lineWidth = 3; 
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round'; 
+                ctx.strokeStyle = '#001a4d'; // Cor da tinta azul escuro
             }
-            window.addEventListener('resize', resize);
-            resize(); // Chama ao iniciar
+            resizeCanvas();
 
             function getPos(e) {
-                const rect = c.getBoundingClientRect();
-                const x = e.touches ? e.touches[0].clientX : e.clientX;
-                const y = e.touches ? e.touches[0].clientY : e.clientY;
-                return { x: x - rect.left, y: y - rect.top };
+                const rect = canvas.getBoundingClientRect();
+                let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
             }
 
-            const start = (e) => { drawing=true; ctx.beginPath(); ctx.moveTo(getPos(e).x, getPos(e).y); e.preventDefault(); };
-            const end = () => drawing=false;
-            const move = (e) => { if(!drawing)return; ctx.lineTo(getPos(e).x, getPos(e).y); ctx.stroke(); e.preventDefault(); };
+            function start(e) { drawing = true; draw(e); }
+            function end() { drawing = false; ctx.beginPath(); }
+            function draw(e) {
+                if (!drawing) return;
+                const pos = getPos(e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+                e.preventDefault(); 
+            }
 
-            c.addEventListener('mousedown', start); c.addEventListener('touchstart', start, {passive:false});
-            c.addEventListener('mouseup', end); c.addEventListener('touchend', end);
-            c.addEventListener('mousemove', move); c.addEventListener('touchmove', move, {passive:false});
+            canvas.addEventListener('mousedown', start);
+            canvas.addEventListener('mouseup', end);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('touchstart', start, {passive: false});
+            canvas.addEventListener('touchend', end);
+            canvas.addEventListener('touchmove', draw, {passive: false});
         }
+
         function clearSig(id) {
-            const c = document.getElementById(id);
-            c.getContext('2d').clearRect(0,0,c.width,c.height);
+            const canvas = document.getElementById(id);
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
-        // --- SALVAMENTO LOCAL ---
-        function saveData(el) {
-            let val = el.type==='checkbox' ? el.checked : el.value;
-            localStorage.setItem('checklist_'+el.id, val);
-            const s = document.getElementById('status-save');
-            s.style.opacity=1; setTimeout(()=>s.style.opacity=0, 1000);
-        }
-        function loadData() {
-            document.querySelectorAll('input, select').forEach(el => {
-                const val = localStorage.getItem('checklist_'+el.id);
-                if(val !== null) {
-                    if(el.type==='checkbox') el.checked = (val==='true');
-                    else el.value = val;
-                }
-            });
-        }
-        function limparTudo() {
-            if(confirm("Apagar tudo?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        // --- PDF ---
+        // --- GERADOR DE PDF ---
         function baixarPDF() {
-            const el = document.getElementById('conteudo-vistoria');
-            const placa = document.getElementById('placa_veiculo').value || "SEM_PLACA";
+            const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-save');
+            const originalText = "💾 SALVAR PDF";
+            const placaInput = document.getElementById('placa_veiculo').value;
             
-            // Verifica se a biblioteca carregou
-            if(typeof html2pdf === 'undefined') {
-                alert("Erro: Biblioteca PDF não carregou. Verifique sua internet.");
-                return;
+            if(!placaInput) { 
+                alert("⚠️ Por favor, preencha a PLACA do veículo para salvar."); 
+                document.getElementById('placa_veiculo').focus(); 
+                return; 
             }
 
-            btn.innerText = "⏳ GERANDO...";
+            const placaFormatada = placaInput.replace(/\s+/g, '').toUpperCase();
+            const fileName = `Checklist_${placaFormatada}.pdf`;
+
+            btn.innerHTML = "⏳ GERANDO...";
+
             const opt = {
-                margin: 0.2, filename: `Checklist_${placa}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                margin:       0.2, // Margem fina
+                filename:     fileName,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: 'css' }
             };
 
-            html2pdf().set(opt).from(el).save().then(() => {
-                btn.innerText = "✅ SALVO!";
-                setTimeout(()=>btn.innerText="💾 SALVAR PDF", 2000);
-            });
+            // MÉTODO PADRÃO ROBUSTO (Funciona PC e Mobile Browser)
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    btn.innerHTML = `✅ SALVO!`;
+                    setTimeout(() => btn.innerHTML = originalText, 2500);
+                }).catch(err => {
+                    console.error(err);
+                    alert("Erro ao salvar. Tente novamente.");
+                    btn.innerHTML = originalText;
+                });
+            }, 500);
         }
 
-        // --- MÁSCARAS SIMPLES ---
-        function maskCPF(i){ i.value=i.value.replace(/\D/g,"").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d{1,2})$/,"$1-$2"); }
-        function maskPhone(i){ i.value=i.value.replace(/\D/g,"").replace(/^(\d{2})(\d)/g,"($1) $2").replace(/(\d)(\d{4})$/,"$1-$2"); }
-        function maskPlaca(i){ i.value=i.value.toUpperCase().replace(/[^A-Z0-9]/g,""); }
+        function limparFormulario() {
+            if(confirm('Tem certeza que deseja limpar todo o formulário?')) {
+                document.querySelectorAll('input:not([type="date"]):not([type="time"])').forEach(i => {
+                    if(i.type==='checkbox'||i.type==='radio') i.checked=false; else i.value='';
+                });
+                document.querySelectorAll('select').forEach(s => s.selectedIndex=0);
+                clearSig('sig-responsible');
+                clearSig('sig-client');
+                window.scrollTo(0,0);
+            }
+        }
     </script>
 </body>
 </html>
