@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* --- ESTILOS GERAIS --- */
+        /* --- ESTILOS GERAIS (MANTIDOS IGUAIS) --- */
         :root {
             --primary: #001a4d;
             --secondary: #003380;
@@ -49,48 +49,33 @@
         .info-item label { display: block; font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 4px; }
         .info-item input { width: 100%; border: none; background: transparent; font-weight: 600; font-size: 14px; color: var(--text); outline: none; }
 
-        /* --- SEÇÕES BLINDADAS CONTRA QUEBRA --- */
-        .section { 
-            margin-bottom: 20px; 
-            /* O SEGREDO: Se não couber na página, joga tudo pra próxima */
-            break-inside: avoid; 
-            page-break-inside: avoid;
-            background: #fff;
-        }
+        /* SEÇÕES - REMOVI A REGRA RÍGIDA DE BREAK-INSIDE PARA TESTAR FLUXO NATURAL */
+        .section { margin-bottom: 15px; }
         
         .section-title {
-            background: var(--primary); color: white; padding: 10px 15px; 
-            font-size: 13px; font-weight: 600; border-radius: 8px 8px 0 0; 
+            background: var(--primary); color: white; padding: 8px 15px; 
+            font-size: 12px; font-weight: 600; border-radius: 6px 6px 0 0; 
             text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .section-content { border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 15px; background: #fff; }
+        .section-content { border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; padding: 12px; background: #fff; }
 
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 10px; }
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 11px; font-weight: 600; color: #555; margin-bottom: 6px; }
-        .form-group input, .form-group select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; outline: none; background: #fff; }
+        .form-group label { font-size: 10px; font-weight: 600; color: #555; margin-bottom: 4px; }
+        .form-group input, .form-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; outline: none; background: #fff; }
         
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
-        .checkbox-item { display: flex; align-items: center; font-size: 12px; color: #444; cursor: pointer; background: #f8f9fa; padding: 10px; border-radius: 6px; }
-        .checkbox-item input { margin-right: 8px; accent-color: var(--primary); transform: scale(1.2); }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; }
+        .checkbox-item { display: flex; align-items: center; font-size: 11px; color: #444; cursor: pointer; background: #f8f9fa; padding: 8px; border-radius: 4px; }
+        .checkbox-item input { margin-right: 6px; accent-color: var(--primary); transform: scale(1.1); }
 
         .radio-group { display: flex; gap: 15px; margin-top: 4px; }
         .radio-label { display: flex; align-items: center; font-size: 12px; cursor: pointer; }
         .radio-label input { margin-right: 6px; accent-color: var(--accent); transform: scale(1.2); }
 
-        /* --- ASSINATURAS BLINDADAS --- */
-        .signature-section { 
-            margin-top: 15px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px; 
-            /* Garante que as assinaturas fiquem juntas */
-            break-inside: avoid;
-            page-break-inside: avoid;
-        }
+        .signature-section { margin-top: 15px; display: flex; flex-direction: column; gap: 20px; break-inside: avoid; }
         .signature-box { width: 100%; }
         .signature-wrapper {
-            position: relative; width: 100%; height: 180px; 
+            position: relative; width: 100%; height: 160px; /* Reduzi um pouco a altura */
             border: 2px dashed #bbb; background-color: #fafafa; border-radius: 8px;
             touch-action: none; overflow: hidden;
         }
@@ -102,58 +87,59 @@
             cursor: pointer; z-index: 10;
         }
 
-        /* --- FOTOS NA INTERFACE (UPLOAD) --- */
         .photo-upload-area {
             border: 2px dashed var(--primary); background: #f0f4f8; padding: 20px;
             text-align: center; border-radius: 8px; cursor: pointer; margin-bottom: 15px;
         }
         .photo-upload-label { font-weight: bold; color: var(--primary); display: block; margin-bottom: 5px; }
-        .photo-upload-sub { font-size: 11px; color: #666; }
         
         #photo-preview-container {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 15px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px;
         }
         .photo-card { position: relative; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; background: #fff; }
-        .photo-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
+        .photo-card img { width: 100%; height: 100px; object-fit: cover; display: block; }
         .btn-remove-photo {
-            position: absolute; top: 5px; right: 5px; background: rgba(230, 57, 70, 0.9); color: white;
-            border: none; width: 24px; height: 24px; border-radius: 50%; font-weight: bold; cursor: pointer;
+            position: absolute; top: 2px; right: 2px; background: rgba(230, 57, 70, 0.9); color: white;
+            border: none; width: 20px; height: 20px; border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 12px;
         }
 
-        /* --- ÁREA DE FOTOS DO PDF (BLINDADA) --- */
+        /* --- LAYOUT DE FOTOS NO PDF (AJUSTADO) --- */
         #pdf-photos-area {
             display: none; 
-            margin-top: 20px;
+            margin-top: 15px;
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .pdf-photo-grid {
+            display: flex;
+            flex-wrap: wrap; /* Permite quebrar linha */
+            gap: 10px;
+            justify-content: space-between;
         }
         
         .pdf-photo-item {
-            display: block;
+            /* Força 2 fotos por linha (aprox 48% cada) */
+            width: 48%; 
             text-align: center;
             background: #fff;
-            padding: 10px;
+            padding: 5px;
             border: 1px solid #eee;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             
-            /* BLINDAGEM TOTAL: NUNCA CORTAR A FOTO */
-            break-inside: avoid !important;
-            page-break-inside: avoid !important;
-            -webkit-column-break-inside: avoid !important;
-            
-            /* Se necessário, quebre a página ANTES da foto */
-            page-break-after: auto; 
+            /* Impede quebra DENTRO da caixinha da foto */
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
         
         .pdf-photo-item img {
-            max-width: 100%;
-            /* Altura controlada para caber na página A4 */
-            max-height: 480px; 
-            object-fit: contain;
+            width: 100%; /* Ocupa a largura da caixinha */
+            height: 250px; /* Altura fixa para manter padrão e economizar espaço */
+            object-fit: contain; /* Mostra a foto inteira sem cortar */
             border-radius: 4px;
             display: block;
-            margin: 0 auto;
         }
 
-        /* --- BOTÕES --- */
         .actions { margin-top: 30px; display: grid; grid-template-columns: 2fr 1fr; gap: 15px; padding-bottom: 20px; }
         .btn {
             padding: 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; 
@@ -162,7 +148,6 @@
         .btn-save { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; box-shadow: 0 4px 10px rgba(0, 26, 77, 0.3); }
         .btn-clear { background: white; color: var(--accent); border: 2px solid var(--accent); }
 
-        /* MODO IMPRESSÃO/PDF */
         @media print {
             .actions, .photo-upload-area, .btn-remove-photo { display: none !important; }
         }
@@ -172,7 +157,6 @@
 
     <div class="container" id="conteudo-vistoria">
         
-        <!-- HEADER -->
         <div class="header">
             <div class="logo-section">
                 <img src="logo.png" class="logo-img" alt="Logo Porto Mais" crossorigin="anonymous">
@@ -186,7 +170,7 @@
             <div class="info-item"><label>Nº Sinistro/Evento</label><input type="text" placeholder="Digite..." inputmode="numeric"></div>
         </div>
 
-        <!-- SEÇÕES -->
+        <!-- SEÇÕES (Código idêntico, apenas CSS otimizado acima) -->
         <div class="section">
             <div class="section-title">📍 DADOS DA OFICINA / RESPONSÁVEL</div>
             <div class="section-content">
@@ -273,21 +257,20 @@
             </div>
         </div>
 
-        <!-- UPLOAD DE FOTOS (Visível apenas na tela) -->
+        <!-- UPLOAD FOTOS -->
         <div class="section" data-html2canvas-ignore="true">
             <div class="section-title">📸 FOTOS DO VEÍCULO</div>
             <div class="section-content">
                 <div class="photo-upload-area" onclick="document.getElementById('photo_input').click()">
                     <span class="photo-upload-label">+ ADICIONAR FOTOS</span>
-                    <span class="photo-upload-sub">Clique para selecionar</span>
                     <input type="file" id="photo_input" accept="image/*" multiple style="display: none;" onchange="handlePhotoUpload(this)">
                 </div>
                 <div id="photo-preview-container"></div>
             </div>
         </div>
 
-        <!-- ASSINATURAS (BLINDADA CONTRA CORTE) -->
-        <div class="section" style="break-inside: avoid; page-break-inside: avoid;">
+        <!-- ASSINATURAS -->
+        <div class="section">
             <div class="section-title">📋 ASSINATURAS</div>
             <div class="section-content">
                 <p style="font-size: 11px; margin-bottom: 15px; color: #444;">Declaro que os pertences foram conferidos e autorizo a desmontagem.</p>
@@ -304,13 +287,10 @@
             </div>
         </div>
 
-        <!-- ÁREA QUE APARECERÁ SÓ NO PDF -->
+        <!-- ÁREA DE FOTOS DO PDF -->
         <div id="pdf-photos-area">
-            <!-- Quebra de página FORÇADA antes das fotos começarem -->
-            <div class="html2pdf__page-break"></div> 
-            
-            <div class="section-title" style="margin-bottom: 20px;">📸 REGISTRO FOTOGRÁFICO</div>
-            
+            <!-- Removi o page-break forçado para ele fluir naturalmente -->
+            <div class="section-title" style="margin-bottom: 10px; width: 100%;">📸 REGISTRO FOTOGRÁFICO</div>
             <div class="pdf-photo-grid" id="pdf-photo-grid"></div>
         </div>
 
@@ -366,7 +346,6 @@
         function addPhotoToPDF(src) {
             const container = document.getElementById('pdf-photo-grid');
             const div = document.createElement('div');
-            // 'pdf-photo-item' tem CSS anti-quebra (break-inside: avoid)
             div.className = 'pdf-photo-item';
             div.innerHTML = `<img src="${src}">`;
             container.appendChild(div);
@@ -445,7 +424,6 @@
 
             btn.innerHTML = "⏳ GERANDO...";
 
-            // Mostra fotos
             photosArea.style.display = 'block';
 
             const opt = {
@@ -454,13 +432,13 @@
                 image:        { type: 'jpeg', quality: 0.95 },
                 html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                // Configuração CRÍTICA para evitar cortes de imagens e assinaturas
-                pagebreak:    { mode: ['css', 'legacy'] } 
+                // Alterei para 'css' para ele respeitar o break-inside: avoid
+                pagebreak:    { mode: 'css' } 
             };
 
             setTimeout(() => {
                 html2pdf().set(opt).from(element).save().then(() => {
-                    photosArea.style.display = 'none'; // Esconde
+                    photosArea.style.display = 'none';
                     btn.innerHTML = `✅ SALVO!`;
                     setTimeout(() => btn.innerHTML = originalText, 2500);
                 }).catch(err => {
