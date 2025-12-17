@@ -15,19 +15,16 @@
             border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* HEADER */
         .header { display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #001a4d; padding-bottom: 15px; margin-bottom: 20px; }
         .logo-section { text-align: center; }
         .logo-img { max-width: 250px; height: auto; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
         .header-subtitle { font-size: 14px; color: #555; margin-top: 5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* INFO BAR */
         .info-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .info-header-item { background: #f8f9fa; padding: 8px; border-left: 4px solid #001a4d; border-radius: 4px; }
         .info-header-item label { display: block; font-weight: bold; color: #001a4d; font-size: 11px; margin-bottom: 3px; }
         .info-header-item input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-weight: 600; font-size: 13px; }
 
-        /* SECTIONS */
         .section { margin-bottom: 20px; break-inside: avoid; page-break-inside: avoid; }
         .section-title {
             background: linear-gradient(90deg, #001a4d 0%, #003380 100%); color: white;
@@ -36,13 +33,11 @@
         }
         .section-content { border: 1px solid #e1e4e8; border-top: none; border-radius: 0 0 5px 5px; padding: 15px; background: #fff; }
 
-        /* FORMS */
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 10px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-size: 11px; font-weight: 600; color: #444; margin-bottom: 4px; }
         .form-group input, .form-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; outline: none; }
         
-        /* CHECKBOXES & RADIOS */
         .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
         .checkbox-item { display: flex; align-items: center; font-size: 12px; color: #333; cursor: pointer; background: #f9f9f9; padding: 8px; border-radius: 4px; }
         .checkbox-item input { margin-right: 8px; accent-color: #001a4d; transform: scale(1.2); }
@@ -50,7 +45,6 @@
         .radio-label { display: flex; align-items: center; font-size: 12px; cursor: pointer; }
         .radio-label input { margin-right: 5px; accent-color: #e63946; transform: scale(1.2); }
 
-        /* ASSINATURA */
         .signature-section { margin-top: 20px; display: flex; flex-direction: column; gap: 30px; }
         .signature-box { width: 100%; }
         .signature-wrapper {
@@ -65,7 +59,6 @@
             border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: bold; cursor: pointer; z-index: 10;
         }
 
-        /* BOTÕES */
         .actions { margin-top: 30px; display: flex; gap: 15px; justify-content: center; padding-bottom: 30px; }
         .btn {
             padding: 18px 25px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; 
@@ -289,19 +282,22 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
-        // --- LÓGICA INTELIGENTE (CORRIGIDA) ---
+        // --- SALVAR + COMPARTILHAR ---
         function processarDocumento() {
             const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-save');
             const originalText = document.getElementById('btn-text').innerText;
-            const placa = document.getElementById('placa_veiculo').value || 'portomais';
-            const fileName = `vistoria_${placa}.pdf`;
-
-            if(!document.getElementById('placa_veiculo').value) { 
+            const placaInput = document.getElementById('placa_veiculo').value;
+            
+            if(!placaInput) { 
                 alert("⚠️ Preencha a PLACA."); 
                 document.getElementById('placa_veiculo').focus(); 
                 return; 
             }
+
+            // NOME CORRIGIDO: Checklist_PLACA
+            const placaFormatada = placaInput.replace(/\s+/g, '').toUpperCase();
+            const fileName = `Checklist_${placaFormatada}.pdf`;
 
             btn.innerHTML = "⏳ PROCESSANDO...";
 
@@ -314,39 +310,37 @@
                 pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            // Detecta se é CELULAR (Android/iPhone)
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
             html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
                 
-                // FLUXO: SÓ ABRE O MENU COMPARTILHAR SE FOR CELULAR
-                if (isMobile && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: "application/pdf" })] })) {
-                    
-                    const file = new File([pdfBlob], fileName, { type: "application/pdf" });
-                    navigator.share({
-                        files: [file],
-                        title: 'Vistoria Porto Mais',
-                        text: `Segue vistoria do veículo ${placa}`
-                    }).then(() => {
-                        btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
-                    }).catch((error) => {
-                        console.log('Erro share:', error);
-                        btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
-                    });
+                // 1. SEMPRE FORÇA O DOWNLOAD (PC ou Mobile - Backup)
+                const url = URL.createObjectURL(pdfBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click(); // Dispara o download
+                document.body.removeChild(a);
 
-                } else {
-                    // SE FOR PC (OU CELULAR VELHO), BAIXA DIRETO
-                    // Isso evita a janela de compartilhamento do Windows 10/11
-                    const url = URL.createObjectURL(pdfBlob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
+                // 2. SE FOR CELULAR, TENTA ABRIR O MENU DE COMPARTILHAR DEPOIS
+                if (isMobile && navigator.canShare) {
+                    const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                        setTimeout(() => {
+                            navigator.share({
+                                files: [file],
+                                title: 'Vistoria Porto Mais',
+                                text: `Checklist do veículo ${placaFormatada}`
+                            }).catch((err) => console.log('Compartilhamento fechado ou erro:', err));
+                        }, 500); // Pequeno delay para garantir que o download comece antes
+                    }
                 }
+
+                btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
+                URL.revokeObjectURL(url);
+
             }).catch(err => {
                 console.error(err);
                 alert("Erro ao gerar PDF.");
