@@ -19,7 +19,6 @@
         /* HEADER */
         .header { display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #001a4d; padding-bottom: 15px; margin-bottom: 20px; }
         .logo-section { text-align: center; }
-        /* DICA: Para evitar erros de imagem, converta sua logo para Base64 */
         .logo-img { max-width: 250px; height: auto; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
         .header-subtitle { font-size: 14px; color: #555; margin-top: 5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
@@ -45,37 +44,63 @@
         .form-group input, .form-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; outline: none; }
         .form-group input:focus { border-color: #001a4d; }
 
-        /* CHECKBOXES */
+        /* CHECKBOXES & RADIOS */
         .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
         .checkbox-item { display: flex; align-items: center; font-size: 12px; color: #333; cursor: pointer; background: #f9f9f9; padding: 6px; border-radius: 4px; }
         .checkbox-item input { margin-right: 6px; accent-color: #001a4d; }
-
-        /* PNEUS & AVARIAS */
         .radio-group { display: flex; gap: 10px; margin-top: 5px; }
         .radio-label { display: flex; align-items: center; font-size: 11px; cursor: pointer; }
         .radio-label input { margin-right: 3px; accent-color: #e63946; }
 
-        /* BOTÕES (Visíveis apenas na tela) */
+        /* --- ÁREA DE ASSINATURA --- */
+        .signature-wrapper {
+            position: relative;
+            width: 100%;
+            border: 1px dashed #ccc;
+            background-color: #fcfcfc;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 120px; /* Altura da área de assinatura */
+            cursor: crosshair;
+            touch-action: none; /* Impede rolar a tela ao assinar */
+        }
+        .clear-sig {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #ffcccc;
+            color: #cc0000;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 10px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* BOTÕES DE AÇÃO */
         .actions { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
-        
         .btn {
             padding: 15px 30px; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; 
             cursor: pointer; text-transform: uppercase; transition: background 0.2s;
             display: flex; align-items: center; gap: 10px; color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
         .btn-pdf { background-color: #001a4d; }
         .btn-pdf:hover { background-color: #002b80; }
-
         .btn-clear { background-color: #fff; color: #e63946; border: 2px solid #e63946; }
         .btn-clear:hover { background-color: #fff0f1; }
 
-        /* AJUSTES PARA IMPRESSÃO/PDF */
+        /* PRINT */
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
-            .actions { display: none !important; }
+            .actions, .clear-sig { display: none !important; } /* Esconde botões no PDF */
+            .signature-wrapper { border: 1px solid #000; background: transparent; }
         }
     </style>
 </head>
@@ -86,13 +111,13 @@
         <!-- HEADER -->
         <div class="header">
             <div class="logo-section">
-                <!-- Se a imagem não aparecer no PDF, use Base64 ou garanta que 'logo.png' está acessível -->
+                <!-- Certifique-se de que a logo.png está na pasta ou use Base64 -->
                 <img src="logo.png" class="logo-img" alt="Logo Porto Mais" crossorigin="anonymous">
                 <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
             </div>
         </div>
 
-        <!-- DADOS GERAIS -->
+        <!-- INFO -->
         <div class="info-header">
             <div class="info-header-item">
                 <label>Data Entrada</label>
@@ -108,7 +133,7 @@
             </div>
         </div>
 
-        <!-- SEÇÕES -->
+        <!-- DADOS -->
         <div class="section">
             <div class="section-title">📍 DADOS DA OFICINA / RESPONSÁVEL</div>
             <div class="section-content">
@@ -149,14 +174,6 @@
                     <div class="form-group">
                         <label>Telefone/WhatsApp</label>
                         <input type="text" placeholder="(00) 00000-0000">
-                    </div>
-                    <div class="form-group">
-                        <label>Veículo Trazido Por</label>
-                        <select>
-                            <option>Próprio Cliente</option>
-                            <option>Guincho</option>
-                            <option>Outro</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -266,26 +283,38 @@
         </div>
 
         <div class="section">
-            <div class="section-title">📋 AUTORIZAÇÃO E ASSINATURA</div>
+            <div class="section-title">📋 AUTORIZAÇÃO E ASSINATURA DIGITAL</div>
             <div class="section-content">
                 <p style="font-size: 11px; margin-bottom: 15px; line-height: 1.3;">
                     Declaro que os pertences acima foram conferidos na minha presença e autorizo a desmontagem para orçamento/reparo.
-                    Estou ciente que avarias não relacionadas ao evento (pré-existentes) não serão cobertas.
                 </p>
-                <div class="form-row" style="margin-top: 25px;">
-                    <div class="form-group" style="text-align: center;">
-                        <div style="border-bottom: 1px solid #000; height: 25px; width: 80%; margin: 0 auto;"></div>
-                        <label style="margin-top: 5px;">Responsável (Oficina/Porto Mais)</label>
+                
+                <div class="form-row" style="margin-top: 15px;">
+                    <!-- ASSINATURA 1 -->
+                    <div class="form-group">
+                        <label>Assinatura Responsável (Oficina/Porto Mais)</label>
+                        <div class="signature-wrapper">
+                            <canvas id="sig-responsible"></canvas>
+                            <button class="clear-sig" onclick="clearSig('sig-responsible')">Limpar X</button>
+                        </div>
                     </div>
-                    <div class="form-group" style="text-align: center;">
-                        <div style="border-bottom: 1px solid #000; height: 25px; width: 80%; margin: 0 auto;"></div>
-                        <label style="margin-top: 5px;">Cliente / Entregador</label>
+                    
+                    <!-- ASSINATURA 2 -->
+                    <div class="form-group">
+                        <label>Assinatura Cliente / Entregador</label>
+                        <div class="signature-wrapper">
+                            <canvas id="sig-client"></canvas>
+                            <button class="clear-sig" onclick="clearSig('sig-client')">Limpar X</button>
+                        </div>
                     </div>
                 </div>
+                <p style="font-size: 10px; color: #888; text-align: center; margin-top: 5px;">
+                    (Assine na caixa acima usando o dedo ou mouse)
+                </p>
             </div>
         </div>
 
-        <!-- BOTÕES: IGNORADOS PELO PDF -->
+        <!-- BOTÕES -->
         <div class="actions" data-html2canvas-ignore="true">
             <button class="btn btn-pdf" onclick="gerarPDF()">
                 <span>📄</span> BAIXAR PDF
@@ -298,13 +327,12 @@
     </div>
 
     <script>
-        // --- 1. CONFIGURAÇÃO AUTOMÁTICA ---
+        // --- CONFIG INICIAL ---
         document.addEventListener('DOMContentLoaded', function() {
-            // Data e Hora Atual
             const now = new Date();
             const dateInput = document.getElementById('data_entrada');
             if(dateInput) dateInput.valueAsDate = now;
-
+            
             const timeInput = document.getElementById('hora_entrada');
             if(timeInput) {
                 const hours = String(now.getHours()).padStart(2, '0');
@@ -312,76 +340,149 @@
                 timeInput.value = `${hours}:${minutes}`;
             }
 
-            // Converter texto para maiúsculas
             document.querySelectorAll('input[type="text"]').forEach(input => {
                 input.addEventListener('input', function() {
                     this.value = this.value.toUpperCase();
                 });
             });
+
+            // INICIAR ASSINATURAS
+            initSignaturePad('sig-responsible');
+            initSignaturePad('sig-client');
         });
 
-        // --- 2. GERAR PDF OTIMIZADO ---
+        // --- LÓGICA DE ASSINATURA (CANVAS) ---
+        const sigPads = {}; // Guardar referências
+
+        function initSignaturePad(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+
+            // Ajustar tamanho real do canvas para não pixelar
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                ctx.scale(ratio, ratio);
+                ctx.lineWidth = 2; // Espessura da caneta
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#000';
+            }
+            
+            // Chama o resize inicial e no redimensionamento da tela
+            resizeCanvas();
+            // window.addEventListener('resize', resizeCanvas); // Cuidado: isso limpa a assinatura se girar a tela
+
+            // Funções de desenho
+            function startPosition(e) {
+                drawing = true;
+                draw(e);
+            }
+            function endPosition() {
+                drawing = false;
+                ctx.beginPath();
+            }
+            function draw(e) {
+                if (!drawing) return;
+                
+                // Coordenadas Mouse vs Touch
+                let clientX, clientY;
+                if(e.touches) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+
+                const rect = canvas.getBoundingClientRect();
+                ctx.lineTo(clientX - rect.left, clientY - rect.top);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(clientX - rect.left, clientY - rect.top);
+                
+                // Previne scroll da tela no celular enquanto desenha
+                e.preventDefault(); 
+            }
+
+            // Event Listeners (Mouse + Touch)
+            canvas.addEventListener('mousedown', startPosition);
+            canvas.addEventListener('mouseup', endPosition);
+            canvas.addEventListener('mousemove', draw);
+
+            canvas.addEventListener('touchstart', startPosition, {passive: false});
+            canvas.addEventListener('touchend', endPosition);
+            canvas.addEventListener('touchmove', draw, {passive: false});
+
+            sigPads[canvasId] = ctx;
+        }
+
+        // Função Limpar Assinatura
+        function clearSig(id) {
+            const canvas = document.getElementById(id);
+            const ctx = canvas.getContext('2d');
+            // Limpa usando o tamanho interno real
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        }
+
+        // --- GERAR PDF ---
         function gerarPDF() {
             const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-pdf');
             const originalText = btn.innerHTML;
             
-            // Validação simples (exemplo: Placa)
             const placa = document.getElementById('placa_veiculo').value;
             if(!placa) {
-                alert("⚠️ Por favor, preencha pelo menos a PLACA do veículo.");
+                alert("⚠️ Por favor, preencha a PLACA do veículo.");
                 document.getElementById('placa_veiculo').focus();
                 return;
             }
 
             btn.innerHTML = "⏳ GERANDO...";
             
-            // Opções ajustadas para evitar página em branco
-            // Margem inferior reduzida (0.1) ajuda a não transbordar
+            // Oculta os botões de limpar assinatura temporariamente para o print (via CSS media print já resolve, mas reforçando)
+            
             const opt = {
-                margin:       [0.3, 0.3, 0.1, 0.3], // Top, Left, Bottom, Right
+                margin:       [0.3, 0.3, 0.1, 0.3], 
                 filename:     `vistoria_${placa || 'portomais'}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2, 
-                    useCORS: true,
+                    useCORS: true, 
                     scrollY: 0,
-                    // Garante que o fundo seja branco
                     backgroundColor: '#ffffff'
                 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                // Evita quebra de página dentro de elementos
                 pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            // Timeout para garantir renderização de estilos
             setTimeout(() => {
                 html2pdf().set(opt).from(element).save().then(() => {
                     btn.innerHTML = originalText;
                 }).catch(err => {
-                    console.error("Erro no PDF:", err);
-                    alert("Erro ao gerar PDF. Verifique se a logo está acessível.");
+                    console.error(err);
+                    alert("Erro ao gerar. Tente novamente.");
                     btn.innerHTML = originalText;
                 });
             }, 500);
         }
 
-        // --- 3. LIMPAR FORMULÁRIO ---
+        // --- LIMPAR TUDO ---
         function limparFormulario() {
-            if(confirm('Deseja limpar todos os dados preenchidos?')) {
-                const inputs = document.querySelectorAll('input');
-                const selects = document.querySelectorAll('select');
-                
-                inputs.forEach(input => {
-                    if(input.type === 'checkbox' || input.type === 'radio') {
-                        input.checked = false;
-                    } else if (input.type !== 'date' && input.type !== 'time') {
-                        // Mantém data/hora, limpa o resto
-                        input.value = '';
+            if(confirm('Limpar TUDO (incluindo assinaturas)?')) {
+                document.querySelectorAll('input').forEach(input => {
+                    if(input.type !== 'date' && input.type !== 'time') {
+                        if(input.type === 'checkbox' || input.type === 'radio') input.checked = false;
+                        else input.value = '';
                     }
                 });
+                document.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
                 
-                selects.forEach(select => select.selectedIndex = 0);
+                // Limpar assinaturas
+                clearSig('sig-responsible');
+                clearSig('sig-client');
+
                 window.scrollTo(0,0);
             }
         }
