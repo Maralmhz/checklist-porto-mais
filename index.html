@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Checklist Porto Mais</title>
     
-    <!-- Ícone e Lib PDF -->
     <link rel="icon" type="image/png" href="logo.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        :root { --primary: #001a4d; --bg: #f4f6f9; --text: #333; --border: #e0e0e0; }
+        :root { --primary: #001a4d; --bg: #f4f6f9; --text: #333; --border: #ccc; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background: var(--bg); 
-            padding: 15px; 
+            padding: 10px; 
             color: var(--text);
         }
 
@@ -24,59 +23,62 @@
             max-width: 800px; 
             margin: 0 auto; 
             background: #fff; 
-            padding: 20px; 
+            padding: 15px; 
             border-radius: 8px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
         }
 
-        /* HEADER */
-        .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo-img { max-width: 160px; display: block; margin: 0 auto 5px; }
-        .header-subtitle { font-size: 14px; font-weight: bold; color: #555; text-transform: uppercase; }
+        /* HEADER MAIS COMPACTO */
+        .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .logo-img { max-width: 140px; display: block; margin: 0 auto 5px; }
+        .header-subtitle { font-size: 12px; font-weight: bold; color: #555; text-transform: uppercase; letter-spacing: 1px; }
 
         /* INPUTS TOPO */
-        .info-header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .info-item { background: #f8f9fb; padding: 6px; border-left: 4px solid var(--primary); border-radius: 4px; }
-        .info-item label { display: block; font-size: 10px; font-weight: bold; color: var(--primary); }
-        .info-item input { width: 100%; border: none; background: transparent; font-weight: bold; font-size: 13px; outline: none; }
+        .info-header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        .info-item { background: #f8f9fb; padding: 5px 8px; border-left: 3px solid var(--primary); border-radius: 4px; }
+        .info-item label { display: block; font-size: 9px; font-weight: bold; color: var(--primary); margin-bottom: 2px; }
+        .info-item input { width: 100%; border: none; background: transparent; font-weight: bold; font-size: 12px; outline: none; }
 
-        /* SEÇÕES */
-        .section { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; page-break-inside: avoid; }
-        .section-title { background: var(--primary); color: white; padding: 6px 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .section-content { padding: 12px; background: #fff; }
+        /* SEÇÕES COMPACTAS */
+        .section { margin-bottom: 10px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; page-break-inside: avoid; }
+        .section-title { background: var(--primary); color: white; padding: 5px 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .section-content { padding: 8px 10px; background: #fff; }
 
         /* GRIDS */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
         .form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
         
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 10px; font-weight: bold; color: #555; margin-bottom: 2px; }
-        .form-group input, .form-group select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; outline: none; }
+        .form-group label { font-size: 9px; font-weight: bold; color: #555; margin-bottom: 2px; }
+        .form-group input, .form-group select { padding: 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 11px; outline: none; height: 28px; }
 
         /* CHECKBOX */
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; }
-        .checkbox-item { display: flex; align-items: center; font-size: 11px; background: #f9f9f9; padding: 6px; border-radius: 4px; cursor: pointer; }
-        .checkbox-item input { margin-right: 5px; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 4px; }
+        .checkbox-item { display: flex; align-items: center; font-size: 10px; background: #f9f9f9; padding: 4px; border-radius: 3px; cursor: pointer; }
+        .checkbox-item input { margin-right: 4px; }
 
         /* RADIO */
-        .radio-group { display: flex; gap: 12px; }
-        .radio-label { display: flex; align-items: center; font-size: 11px; cursor: pointer; }
-        .radio-label input { margin-right: 4px; }
+        .radio-group { display: flex; gap: 10px; height: 28px; align-items: center; }
+        .radio-label { display: flex; align-items: center; font-size: 10px; cursor: pointer; }
+        .radio-label input { margin-right: 3px; }
 
-        /* ASSINATURAS */
-        .signature-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; page-break-inside: avoid; }
-        .signature-box label { display: block; font-size: 10px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
-        .signature-wrapper { position: relative; width: 100%; height: 140px; border: 2px dashed #ccc; background: #fafafa; border-radius: 6px; }
+        /* ASSINATURAS COMPACTAS */
+        .signature-section { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; page-break-inside: avoid; }
+        .signature-box label { display: block; font-size: 9px; font-weight: bold; color: var(--primary); margin-bottom: 3px; }
+        .signature-wrapper { position: relative; width: 100%; height: 100px; border: 1px dashed #999; background: #fafafa; border-radius: 4px; }
         canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
-        .clear-sig { position: absolute; top: 5px; right: 5px; background: #ffeaea; color: red; border: 1px solid red; font-size: 9px; padding: 2px 6px; cursor: pointer; border-radius: 3px; }
+        
+        /* BOTÃO LIMPAR (visível só na tela) */
+        .clear-sig { position: absolute; top: 2px; right: 2px; background: #ffeaea; color: red; border: 1px solid red; font-size: 8px; padding: 2px 5px; cursor: pointer; border-radius: 3px; z-index: 10; }
 
-        /* BOTÕES */
-        .actions { margin-top: 25px; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
-        .btn { padding: 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; text-transform: uppercase; }
+        /* BOTÕES AÇÃO */
+        .actions { margin-top: 15px; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: white; text-transform: uppercase; font-size: 12px; }
         .btn-save { background: var(--primary); }
         .btn-clear { background: #fff; color: red; border: 1px solid red; }
 
         @media (max-width: 600px) { .signature-section { grid-template-columns: 1fr; } }
+        /* Esconde elementos na impressão */
         @media print { 
             body { padding: 0; background: white; }
             .container { box-shadow: none; padding: 0; max-width: 100%; }
@@ -128,7 +130,7 @@
         <div class="checkbox-grid">
             <label class="checkbox-item"><input type="checkbox"> Chave Roda</label><label class="checkbox-item"><input type="checkbox"> Macaco</label><label class="checkbox-item"><input type="checkbox"> Triângulo</label><label class="checkbox-item"><input type="checkbox"> Estepe</label><label class="checkbox-item"><input type="checkbox"> Antena</label><label class="checkbox-item"><input type="checkbox"> Tapetes</label><label class="checkbox-item"><input type="checkbox"> Manual</label><label class="checkbox-item"><input type="checkbox"> Extintor</label>
         </div>
-        <div class="form-group" style="margin-top: 8px;"><label>Observações:</label><input type="text"></div>
+        <div class="form-group" style="margin-top: 6px;"><label>Observações:</label><input type="text"></div>
     </div></div>
 
     <!-- PNEUS E AVARIAS -->
@@ -140,21 +142,22 @@
     </div></div>
 
     <div class="section"><div class="section-title">⚠️ AVARIAS PRÉ-EXISTENTES</div><div class="section-content">
-        <div class="form-row three-col"><div class="form-group"><label>Frente</label><input type="text"></div><div class="form-group"><label>Lateral Esq.</label><input type="text"></div><div class="form-group"><label>Lateral Dir.</label><input type="text"></div></div>
+        <div class="form-row three-col"><div class="form-group"><label>Frente</label><input type="text"></div><div class="form-group"><label>Lat. Esq.</label><input type="text"></div><div class="form-group"><label>Lat. Dir.</label><input type="text"></div></div>
         <div class="form-row three-col"><div class="form-group"><label>Traseira</label><input type="text"></div><div class="form-group"><label>Teto</label><input type="text"></div><div class="form-group"><label>Interno</label><input type="text"></div></div>
     </div></div>
 
     <!-- ASSINATURAS -->
     <div class="section"><div class="section-title">📋 ASSINATURAS</div><div class="section-content">
-        <div style="font-size:11px; color:#555; margin-bottom:10px;">Declaro que os pertences foram conferidos e autorizo a vistoria.</div>
+        <div style="font-size:10px; color:#555; margin-bottom:5px;">Declaro que os pertences foram conferidos e autorizo a vistoria.</div>
         <div class="signature-section">
             <div class="signature-box">
                 <label>RESPONSÁVEL</label>
-                <div class="signature-wrapper"><canvas id="sig-responsible"></canvas><button class="clear-sig" onclick="clearSig('sig-responsible')">LIMPAR</button></div>
+                <!-- O atributo data-html2canvas-ignore esconde o botão no PDF -->
+                <div class="signature-wrapper"><canvas id="sig-responsible"></canvas><button class="clear-sig" onclick="clearSig('sig-responsible')" data-html2canvas-ignore="true">LIMPAR</button></div>
             </div>
             <div class="signature-box">
                 <label>CLIENTE</label>
-                <div class="signature-wrapper"><canvas id="sig-client"></canvas><button class="clear-sig" onclick="clearSig('sig-client')">LIMPAR</button></div>
+                <div class="signature-wrapper"><canvas id="sig-client"></canvas><button class="clear-sig" onclick="clearSig('sig-client')" data-html2canvas-ignore="true">LIMPAR</button></div>
             </div>
         </div>
     </div></div>
@@ -167,7 +170,6 @@
 </div>
 
 <script>
-    // --- INICIALIZAÇÃO SEGURA ---
     window.onload = function() {
         try {
             const now = new Date();
@@ -185,68 +187,39 @@
         } catch(e) { console.error(e); }
     };
 
-    // --- FUNÇÃO DE ASSINATURA (CORRIGIDA) ---
     function iniciarCanvas(id) {
         var canvas = document.getElementById(id);
         if(!canvas) return;
         var ctx = canvas.getContext('2d');
-        
-        // Ajuste de Tamanho
         var rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width; 
-        canvas.height = rect.height;
-        
-        ctx.lineWidth = 2; 
-        ctx.lineCap = 'round'; 
-        ctx.strokeStyle = '#000';
+        canvas.width = rect.width; canvas.height = rect.height;
+        ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
         
         var desenhando = false;
-
         function getPos(e) {
             var r = canvas.getBoundingClientRect();
-            var x, y;
-            if(e.touches) {
-                x = e.touches[0].clientX - r.left;
-                y = e.touches[0].clientY - r.top;
-            } else {
-                x = e.clientX - r.left;
-                y = e.clientY - r.top;
-            }
+            var x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+            var y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
             return {x:x, y:y};
         }
-
         function start(e) { desenhando=true; ctx.beginPath(); var p=getPos(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }
         function move(e) { if(!desenhando) return; var p=getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
         function end(e) { desenhando=false; }
 
-        canvas.addEventListener('mousedown', start);
-        canvas.addEventListener('mousemove', move);
-        canvas.addEventListener('mouseup', end);
-        
-        // Touch (Celular) com passive: false para evitar scroll ao assinar
-        canvas.addEventListener('touchstart', start, {passive:false});
-        canvas.addEventListener('touchmove', move, {passive:false});
-        canvas.addEventListener('touchend', end);
+        canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); canvas.addEventListener('mouseup', end);
+        canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false}); canvas.addEventListener('touchend', end);
     }
 
-    function clearSig(id) { 
-        var c=document.getElementById(id); 
-        if(c) c.getContext('2d').clearRect(0,0,c.width,c.height); 
-    }
+    function clearSig(id) { var c=document.getElementById(id); if(c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
 
-    // --- GERAR PDF SIMPLES E SEGURO ---
     function baixarPDF() {
         var btn = document.querySelector('.btn-save');
         var placa = document.getElementById('placa_veiculo').value || "CHECKLIST";
         
-        if(placa === "CHECKLIST") {
-            if(!confirm("Placa não preenchida. Deseja salvar mesmo assim?")) return;
-        }
-
         btn.innerText = "GERANDO...";
 
         var opt = {
-            margin:       0.3,
+            margin:       0.2, // Margem pequena
             filename:     'Checklist_' + placa.toUpperCase() + '.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
