@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Checklist Porto Mais</title>
-    <!-- Biblioteca HTML2PDF -->
+    
+    <!-- HTML2PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- FILESAVER (Crucial para não travar o Android) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
-        /* --- ESTILOS GERAIS --- */
+        /* ESTILOS MANTIDOS E OTIMIZADOS */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 10px; }
         
@@ -17,21 +20,17 @@
             border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* HEADER */
         .header { display: flex; justify-content: center; align-items: center; border-bottom: 2px solid #001a4d; padding-bottom: 10px; margin-bottom: 15px; }
         .logo-section { text-align: center; }
-        /* Garanta que a logo.png esteja na mesma pasta do arquivo HTML */
         .logo-img { max-width: 200px; height: auto; margin-bottom: 2px; display: block; margin: 0 auto; }
         .header-subtitle { font-size: 12px; color: #555; margin-top: 2px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* CAMPOS DE INFORMAÇÃO NO TOPO */
         .info-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 15px; }
         .info-header-item { background: #f8f9fa; padding: 6px; border-left: 3px solid #001a4d; border-radius: 4px; }
         .info-header-item label { display: block; font-weight: bold; color: #001a4d; font-size: 10px; margin-bottom: 2px; }
         .info-header-item input { width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-weight: 600; font-size: 12px; }
 
-        /* SEÇÕES DO FORMULÁRIO */
-        .section { margin-bottom: 12px; break-inside: avoid; } /* Evita quebra de página no meio da seção */
+        .section { margin-bottom: 12px; break-inside: avoid; }
         .section-title {
             background: linear-gradient(90deg, #001a4d 0%, #003380 100%); color: white;
             padding: 6px 10px; font-size: 12px; font-weight: bold; border-radius: 4px 4px 0 0; 
@@ -39,13 +38,11 @@
         }
         .section-content { border: 1px solid #e1e4e8; border-top: none; border-radius: 0 0 4px 4px; padding: 10px; background: #fff; }
 
-        /* GRIDS DE INPUTS */
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 6px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-size: 10px; font-weight: 600; color: #444; margin-bottom: 2px; }
         .form-group input, .form-group select { padding: 6px; border: 1px solid #ddd; border-radius: 3px; font-size: 11px; outline: none; }
         
-        /* CHECKBOXES & RADIOS */
         .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 5px; }
         .checkbox-item { display: flex; align-items: center; font-size: 10px; color: #333; cursor: pointer; background: #f9f9f9; padding: 5px; border-radius: 3px; }
         .checkbox-item input { margin-right: 5px; accent-color: #001a4d; transform: scale(1.1); }
@@ -53,11 +50,10 @@
         .radio-label { display: flex; align-items: center; font-size: 10px; cursor: pointer; }
         .radio-label input { margin-right: 3px; accent-color: #e63946; transform: scale(1.1); }
 
-        /* --- ASSINATURA OTIMIZADA --- */
         .signature-section { margin-top: 10px; display: flex; flex-direction: column; gap: 15px; }
-        .signature-box { width: 100%; break-inside: avoid; } /* Não quebra a caixa */
+        .signature-box { width: 100%; break-inside: avoid; }
         .signature-wrapper {
-            position: relative; width: 100%; height: 180px; /* Altura equilibrada para PC e Celular */
+            position: relative; width: 100%; height: 180px;
             border: 2px dashed #999; background-color: #fcfcfc; border-radius: 6px;
             touch-action: none; 
         }
@@ -68,7 +64,6 @@
             border-radius: 3px; padding: 2px 6px; font-size: 10px; font-weight: bold; cursor: pointer; z-index: 10;
         }
 
-        /* BOTÕES */
         .actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; padding-bottom: 20px; }
         .btn {
             padding: 15px 20px; border: none; border-radius: 5px; font-size: 14px; font-weight: bold; 
@@ -78,12 +73,11 @@
         .btn-save { background-color: #001a4d; width: 100%; justify-content: center; }
         .btn-clear { background-color: #fff; color: #e63946; border: 2px solid #e63946; width: auto; }
 
-        /* AJUSTES PARA PDF (PRINT) */
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
             .actions, .clear-sig { display: none !important; }
-            .signature-wrapper { border: 1px solid #000; height: 150px; } /* Menor no PDF pra economizar papel */
+            .signature-wrapper { border: 1px solid #000; height: 150px; }
         }
     </style>
 </head>
@@ -93,7 +87,6 @@
         
         <div class="header">
             <div class="logo-section">
-                <!-- Se a logo não aparecer no APK, converta para Base64 -->
                 <img src="logo.png" class="logo-img" alt="Logo Porto Mais" crossorigin="anonymous">
                 <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
             </div>
@@ -216,7 +209,6 @@
             </div>
         </div>
 
-        <!-- BOTÕES OCULTOS NA IMPRESSÃO -->
         <div class="actions" data-html2canvas-ignore="true">
             <button class="btn btn-save" onclick="baixarPDF()">
                 <span id="btn-text">💾 SALVAR / BAIXAR</span>
@@ -227,7 +219,6 @@
     </div>
 
     <script>
-        // CONFIGURAÇÕES INICIAIS
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
             const dateInput = document.getElementById('data_entrada');
@@ -245,7 +236,6 @@
             }, 300);
         });
 
-        // LÓGICA DE ASSINATURA (CANVAS)
         function initSignaturePad(canvasId) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
@@ -297,7 +287,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
-        // --- LÓGICA DE DOWNLOAD ROBUSTA PARA APK E PC ---
+        // --- SOLUÇÃO ANTI-CRASH (Blob + FileSaver) ---
         function baixarPDF() {
             const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-save');
@@ -315,34 +305,22 @@
 
             btn.innerHTML = "⏳ GERANDO...";
 
-            // Configuração para evitar buracos na página
             const opt = {
                 margin:       0.2,
                 filename:     fileName,
-                image:        { type: 'jpeg', quality: 0.98 },
+                image:        { type: 'jpeg', quality: 0.95 }, // Qualidade levemente reduzida para economizar RAM
                 html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: 'css' } 
+                pagebreak:    { mode: 'css' }
             };
 
-            // USA 'datauristring' PARA FORÇAR O DOWNLOAD NO ANDROID
-            html2pdf().set(opt).from(element).outputPdf('datauristring').then(function(pdfAsString) {
+            // USA .toPdf().get('pdf') PARA GERAR BLOB E SALVAR COM FILESAVER
+            // ISSO EVITA O ERRO DE URI GIGANTE QUE TRAVA O ANDROID
+            html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
                 
-                // CRIA UM LINK INVISÍVEL
-                // Essa técnica ajuda o Android a entender que é um download real
-                const link = document.createElement('a');
-                link.href = pdfAsString;
-                link.download = fileName;
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                
-                // CLICA NO LINK
-                link.click();
-                
-                // REMOVE O LINK
-                document.body.removeChild(link);
-                
-                // FEEDBACK
+                var blob = pdf.output('blob');
+                saveAs(blob, fileName); // Função do FileSaver.js (mais segura)
+
                 btn.innerHTML = `<span id="btn-text">✅ SALVO!</span>`;
                 setTimeout(() => btn.innerHTML = `<span id="btn-text">${originalText}</span>`, 3000);
 
