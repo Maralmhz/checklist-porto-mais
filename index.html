@@ -2,82 +2,263 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#001a4d">
     <title>Checklist Porto Mais</title>
     
-    <!-- HTML2PDF -->
+    <!-- Ícone para Tela Inicial (Favicon) -->
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- Biblioteca HTML2PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- FILESAVER (Crucial para não travar o Android) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
-        /* ESTILOS MANTIDOS E OTIMIZADOS */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 10px; }
+        /* --- RESET & BASE --- */
+        :root {
+            --primary: #001a4d;
+            --secondary: #003380;
+            --accent: #e63946;
+            --bg: #f4f6f9;
+            --surface: #ffffff;
+            --text: #333;
+            --border: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text);
+            padding: 15px;
+            line-height: 1.4;
+        }
+        
+        /* Container Principal com efeito de Cartão */
         .container {
-            max-width: 900px; margin: 0 auto; background: white; padding: 15px;
-            border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: var(--surface); 
+            padding: 25px;
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
-        .header { display: flex; justify-content: center; align-items: center; border-bottom: 2px solid #001a4d; padding-bottom: 10px; margin-bottom: 15px; }
-        .logo-section { text-align: center; }
-        .logo-img { max-width: 200px; height: auto; margin-bottom: 2px; display: block; margin: 0 auto; }
-        .header-subtitle { font-size: 12px; color: #555; margin-top: 2px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-
-        .info-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 15px; }
-        .info-header-item { background: #f8f9fa; padding: 6px; border-left: 3px solid #001a4d; border-radius: 4px; }
-        .info-header-item label { display: block; font-weight: bold; color: #001a4d; font-size: 10px; margin-bottom: 2px; }
-        .info-header-item input { width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-weight: 600; font-size: 12px; }
-
-        .section { margin-bottom: 12px; break-inside: avoid; }
-        .section-title {
-            background: linear-gradient(90deg, #001a4d 0%, #003380 100%); color: white;
-            padding: 6px 10px; font-size: 12px; font-weight: bold; border-radius: 4px 4px 0 0; 
-            text-transform: uppercase; letter-spacing: 0.5px;
+        /* --- HEADER --- */
+        .header { 
+            text-align: center; 
+            border-bottom: 2px solid var(--primary); 
+            padding-bottom: 20px; 
+            margin-bottom: 25px; 
         }
-        .section-content { border: 1px solid #e1e4e8; border-top: none; border-radius: 0 0 4px 4px; padding: 10px; background: #fff; }
-
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 6px; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 10px; font-weight: 600; color: #444; margin-bottom: 2px; }
-        .form-group input, .form-group select { padding: 6px; border: 1px solid #ddd; border-radius: 3px; font-size: 11px; outline: none; }
         
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 5px; }
-        .checkbox-item { display: flex; align-items: center; font-size: 10px; color: #333; cursor: pointer; background: #f9f9f9; padding: 5px; border-radius: 3px; }
-        .checkbox-item input { margin-right: 5px; accent-color: #001a4d; transform: scale(1.1); }
-        .radio-group { display: flex; gap: 10px; margin-top: 2px; }
-        .radio-label { display: flex; align-items: center; font-size: 10px; cursor: pointer; }
-        .radio-label input { margin-right: 3px; accent-color: #e63946; transform: scale(1.1); }
+        .logo-img { 
+            max-width: 180px; 
+            height: auto; 
+            display: block; 
+            margin: 0 auto 8px; 
+        }
+        
+        .header-subtitle { 
+            font-size: 13px; 
+            color: #666; 
+            font-weight: 700; 
+            letter-spacing: 1.2px; 
+            text-transform: uppercase; 
+        }
 
-        .signature-section { margin-top: 10px; display: flex; flex-direction: column; gap: 15px; }
-        .signature-box { width: 100%; break-inside: avoid; }
+        /* --- INFO BAR (Data/Hora) --- */
+        .info-header { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+            gap: 12px; 
+            margin-bottom: 25px; 
+        }
+        
+        .info-item { 
+            background: #f8f9fb; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            border-left: 4px solid var(--primary); 
+        }
+        
+        .info-item label { 
+            display: block; 
+            font-size: 10px; 
+            font-weight: 700; 
+            color: var(--primary); 
+            text-transform: uppercase; 
+            margin-bottom: 4px;
+        }
+        
+        .info-item input { 
+            width: 100%; 
+            border: none; 
+            background: transparent; 
+            font-weight: 600; 
+            font-size: 14px; 
+            color: var(--text); 
+            outline: none; 
+        }
+
+        /* --- SEÇÕES --- */
+        .section { margin-bottom: 20px; break-inside: avoid; }
+        
+        .section-title {
+            background: var(--primary); 
+            color: white;
+            padding: 10px 15px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            border-radius: 8px 8px 0 0; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        
+        .section-content { 
+            border: 1px solid var(--border); 
+            border-top: none; 
+            border-radius: 0 0 8px 8px; 
+            padding: 15px; 
+            background: #fff; 
+        }
+
+        /* --- FORMULÁRIOS --- */
+        .form-row { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 15px; 
+        }
+        
+        .form-group { display: flex; flex-direction: column; }
+        
+        .form-group label { 
+            font-size: 11px; 
+            font-weight: 600; 
+            color: #555; 
+            margin-bottom: 6px; 
+        }
+        
+        .form-group input, .form-group select { 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            outline: none; 
+            transition: border-color 0.2s; 
+            background: #fff;
+        }
+        
+        .form-group input:focus, .form-group select:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 2px rgba(0, 26, 77, 0.1); 
+        }
+
+        /* --- CHECKBOXES (Estilo Botão) --- */
+        .checkbox-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+            gap: 8px; 
+        }
+        
+        .checkbox-item { 
+            display: flex; 
+            align-items: center; 
+            font-size: 12px; 
+            color: #444; 
+            cursor: pointer; 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 6px; 
+            border: 1px solid transparent; 
+            transition: all 0.2s; 
+        }
+        
+        .checkbox-item:hover { background: #eef2f7; }
+        .checkbox-item input { margin-right: 8px; accent-color: var(--primary); transform: scale(1.2); }
+
+        /* --- RADIOS --- */
+        .radio-group { display: flex; gap: 15px; margin-top: 4px; }
+        .radio-label { display: flex; align-items: center; font-size: 12px; cursor: pointer; }
+        .radio-label input { margin-right: 6px; accent-color: var(--accent); transform: scale(1.2); }
+
+        /* --- ASSINATURA --- */
+        .signature-section { margin-top: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .signature-box { width: 100%; }
+        
         .signature-wrapper {
-            position: relative; width: 100%; height: 180px;
-            border: 2px dashed #999; background-color: #fcfcfc; border-radius: 6px;
+            position: relative; 
+            width: 100%; 
+            height: 180px; 
+            border: 2px dashed #bbb; 
+            background-color: #fafafa; 
+            border-radius: 8px;
             touch-action: none; 
+            overflow: hidden;
         }
+        
         canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+        
         .clear-sig {
-            position: absolute; top: 5px; right: 5px;
-            background: #ffe6e6; color: #d8000c; border: 1px solid #d8000c;
-            border-radius: 3px; padding: 2px 6px; font-size: 10px; font-weight: bold; cursor: pointer; z-index: 10;
+            position: absolute; top: 8px; right: 8px;
+            background: #fff0f0; color: var(--accent); border: 1px solid var(--accent);
+            border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; 
+            cursor: pointer; z-index: 10;
+            transition: background 0.2s;
         }
+        .clear-sig:hover { background: var(--accent); color: white; }
 
-        .actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; padding-bottom: 20px; }
+        /* --- BOTÕES DE AÇÃO --- */
+        .actions { 
+            margin-top: 30px; 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 15px; 
+            padding-bottom: 20px; 
+        }
+        
         .btn {
-            padding: 15px 20px; border: none; border-radius: 5px; font-size: 14px; font-weight: bold; 
-            cursor: pointer; text-transform: uppercase; color: white; display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+            padding: 16px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.1s, box-shadow 0.2s;
         }
-        .btn-save { background-color: #001a4d; width: 100%; justify-content: center; }
-        .btn-clear { background-color: #fff; color: #e63946; border: 2px solid #e63946; width: auto; }
+        
+        .btn:active { transform: scale(0.98); }
+        
+        .btn-save { 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
+            color: white; 
+            box-shadow: 0 4px 10px rgba(0, 26, 77, 0.3);
+        }
+        
+        .btn-clear { 
+            background: white; 
+            color: var(--accent); 
+            border: 2px solid var(--accent); 
+        }
 
+        /* --- IMPRESSÃO / PDF --- */
         @media print {
             body { background: white; padding: 0; }
-            .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; border-radius: 0; }
             .actions, .clear-sig { display: none !important; }
-            .signature-wrapper { border: 1px solid #000; height: 150px; }
+            .section { break-inside: avoid; page-break-inside: avoid; }
+            .signature-wrapper { border: 1px solid #000; background: none; height: 140px; }
+            .section-title { color: black; background: #eee; border: 1px solid #ddd; -webkit-print-color-adjust: exact; }
+        }
+
+        /* Ajuste Mobile para Botões */
+        @media (max-width: 600px) {
+            .actions { grid-template-columns: 1fr; }
+            .btn { width: 100%; }
         }
     </style>
 </head>
@@ -85,6 +266,7 @@
 
     <div class="container" id="conteudo-vistoria">
         
+        <!-- HEADER -->
         <div class="header">
             <div class="logo-section">
                 <img src="logo.png" class="logo-img" alt="Logo Porto Mais" crossorigin="anonymous">
@@ -92,52 +274,96 @@
             </div>
         </div>
 
+        <!-- INFO BAR -->
         <div class="info-header">
-            <div class="info-header-item"><label>Data Entrada</label><input type="date" id="data_entrada"></div>
-            <div class="info-header-item"><label>Hora Entrada</label><input type="time" id="hora_entrada"></div>
-            <div class="info-header-item"><label>Nº Sinistro/Evento</label><input type="text" placeholder="Ex: 12345"></div>
+            <div class="info-item">
+                <label>Data Entrada</label>
+                <input type="date" id="data_entrada">
+            </div>
+            <div class="info-item">
+                <label>Hora Entrada</label>
+                <input type="time" id="hora_entrada">
+            </div>
+            <div class="info-item">
+                <label>Nº Sinistro/Evento</label>
+                <input type="text" placeholder="Digite..." inputmode="numeric">
+            </div>
         </div>
 
+        <!-- SEÇÃO 1 -->
         <div class="section">
             <div class="section-title">📍 DADOS DA OFICINA / RESPONSÁVEL</div>
             <div class="section-content">
                 <div class="form-row">
-                    <div class="form-group"><label>Oficina/Local</label><input type="text"></div>
-                    <div class="form-group"><label>Consultor Técnico</label><input type="text"></div>
+                    <div class="form-group">
+                        <label>Oficina/Local</label>
+                        <input type="text" placeholder="Nome da Oficina">
+                    </div>
+                    <div class="form-group">
+                        <label>Consultor Técnico</label>
+                        <input type="text" placeholder="Nome do Responsável">
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- SEÇÃO 2 -->
         <div class="section">
             <div class="section-title">👤 DADOS DO CLIENTE</div>
             <div class="section-content">
                 <div class="form-row">
-                    <div class="form-group"><label>Tipo</label><select><option>Associado Porto Mais</option><option>Terceiro</option></select></div>
-                    <div class="form-group"><label>Nome Completo</label><input type="text"></div>
+                    <div class="form-group">
+                        <label>Tipo de Cliente</label>
+                        <select>
+                            <option>Associado Porto Mais</option>
+                            <option>Terceiro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome Completo</label>
+                        <input type="text" placeholder="Nome do Cliente">
+                    </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>CPF/CNPJ</label><input type="text"></div>
-                    <div class="form-group"><label>Telefone/WhatsApp</label><input type="text"></div>
+                    <div class="form-group">
+                        <label>CPF/CNPJ</label>
+                        <input type="text" placeholder="000.000.000-00" inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone/WhatsApp</label>
+                        <input type="text" placeholder="(00) 00000-0000" inputmode="tel">
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- SEÇÃO 3 -->
         <div class="section">
             <div class="section-title">🚗 IDENTIFICAÇÃO DO VEÍCULO</div>
             <div class="section-content">
                 <div class="form-row">
-                    <div class="form-group"><label>Modelo/Versão</label><input type="text"></div>
+                    <div class="form-group"><label>Modelo/Versão</label><input type="text" placeholder="Ex: Gol 1.6"></div>
                     <div class="form-group"><label>Placa</label><input type="text" id="placa_veiculo" placeholder="ABC-1234"></div>
                     <div class="form-group"><label>Cor</label><input type="text"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Chassi (4 últimos)</label><input type="text"></div>
-                    <div class="form-group"><label>KM Entrada</label><input type="number"></div>
-                    <div class="form-group"><label>Nível Combustível</label><select><option>Reserva</option><option>1/4</option><option>1/2</option><option>3/4</option><option>Cheio</option></select></div>
+                    <div class="form-group"><label>Chassi (4 últimos)</label><input type="text" placeholder="XXXX"></div>
+                    <div class="form-group"><label>KM Atual</label><input type="number" placeholder="00000"></div>
+                    <div class="form-group">
+                        <label>Combustível</label>
+                        <select>
+                            <option>Reserva</option>
+                            <option>1/4</option>
+                            <option>1/2</option>
+                            <option>3/4</option>
+                            <option>Cheio</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- SEÇÃO 4 -->
         <div class="section">
             <div class="section-title">✅ INVENTÁRIO (CHECKLIST)</div>
             <div class="section-content">
@@ -151,14 +377,16 @@
                     <label class="checkbox-item"><input type="checkbox"> Manual</label>
                     <label class="checkbox-item"><input type="checkbox"> Chave Reserva</label>
                     <label class="checkbox-item"><input type="checkbox"> Extintor</label>
-                    <label class="checkbox-item"><input type="checkbox"> Multimídia/Som</label>
+                    <label class="checkbox-item"><input type="checkbox"> Multimídia</label>
                 </div>
-                <div class="form-group" style="margin-top: 8px;">
-                    <label>Observações:</label><input type="text" placeholder="Avarias prévias...">
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Observações de Pertences:</label>
+                    <input type="text" placeholder="Ex: Estepe furado, som original...">
                 </div>
             </div>
         </div>
 
+        <!-- SEÇÃO 5 -->
         <div class="section">
             <div class="section-title">🛞 PNEUS E ESTADO GERAL</div>
             <div class="section-content">
@@ -183,59 +411,78 @@
             </div>
         </div>
         
+        <!-- SEÇÃO 6 -->
         <div class="section">
             <div class="section-title">⚠️ AVARIAS PRÉ-EXISTENTES</div>
             <div class="section-content">
-                <p style="font-size: 9px; color: #666; margin-bottom: 4px;">LEGENDA: (R) Risco | (A) Amassado | (Q) Quebrado | (F) Falta</p>
+                <p style="font-size: 10px; color: #888; margin-bottom: 8px; font-weight: 500;">LEGENDA: (R) Risco | (A) Amassado | (Q) Quebrado | (F) Falta</p>
                 <div class="form-row"><div class="form-group"><label>Frente</label><input type="text"></div><div class="form-group"><label>Lat. Esq</label><input type="text"></div><div class="form-group"><label>Lat. Dir</label><input type="text"></div></div>
                 <div class="form-row"><div class="form-group"><label>Traseira</label><input type="text"></div><div class="form-group"><label>Teto</label><input type="text"></div><div class="form-group"><label>Interno</label><input type="text"></div></div>
             </div>
         </div>
 
+        <!-- ASSINATURAS -->
         <div class="section">
             <div class="section-title">📋 AUTORIZAÇÃO E ASSINATURAS</div>
             <div class="section-content">
-                <p style="font-size: 11px; margin-bottom: 10px;">Declaro que os pertences foram conferidos e autorizo a desmontagem/reparo.</p>
+                <p style="font-size: 11px; margin-bottom: 15px; color: #444;">Declaro que os pertences foram conferidos e autorizo a desmontagem/reparo do veículo descrito acima.</p>
+                
                 <div class="signature-section">
                     <div class="signature-box">
-                        <label style="font-weight: bold; margin-bottom: 5px; display: block; font-size: 11px;">Assinatura do Responsável</label>
-                        <div class="signature-wrapper"><canvas id="sig-responsible"></canvas><button class="clear-sig" onclick="clearSig('sig-responsible')">LIMPAR 🗑️</button></div>
+                        <label style="font-weight: 700; font-size: 11px; color: var(--primary); margin-bottom: 5px; display: block;">ASSINATURA DO RESPONSÁVEL</label>
+                        <div class="signature-wrapper">
+                            <canvas id="sig-responsible"></canvas>
+                            <button class="clear-sig" onclick="clearSig('sig-responsible')">LIMPAR 🗑️</button>
+                        </div>
                     </div>
+                    
                     <div class="signature-box">
-                        <label style="font-weight: bold; margin-bottom: 5px; display: block; font-size: 11px;">Assinatura do Cliente</label>
-                        <div class="signature-wrapper"><canvas id="sig-client"></canvas><button class="clear-sig" onclick="clearSig('sig-client')">LIMPAR 🗑️</button></div>
+                        <label style="font-weight: 700; font-size: 11px; color: var(--primary); margin-bottom: 5px; display: block;">ASSINATURA DO CLIENTE</label>
+                        <div class="signature-wrapper">
+                            <canvas id="sig-client"></canvas>
+                            <button class="clear-sig" onclick="clearSig('sig-client')">LIMPAR 🗑️</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- BOTÕES -->
         <div class="actions" data-html2canvas-ignore="true">
             <button class="btn btn-save" onclick="baixarPDF()">
-                <span id="btn-text">💾 SALVAR / BAIXAR</span>
+                <span id="btn-text">💾 SALVAR PDF</span>
             </button>
-            <button class="btn btn-clear" onclick="limparFormulario()">🗑️ LIMPAR</button>
+            <button class="btn btn-clear" onclick="limparFormulario()">
+                🗑️ LIMPAR TUDO
+            </button>
         </div>
 
     </div>
 
     <script>
+        // CONFIGURAÇÃO INICIAL
         document.addEventListener('DOMContentLoaded', function() {
+            // Data e Hora Automáticas
             const now = new Date();
             const dateInput = document.getElementById('data_entrada');
             if(dateInput) dateInput.valueAsDate = now;
+            
             const timeInput = document.getElementById('hora_entrada');
             if(timeInput) timeInput.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
+            // Caixa Alta Automática
             document.querySelectorAll('input[type="text"]').forEach(input => {
                 input.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
             });
 
+            // Delay para carregar Canvas corretamente
             setTimeout(() => {
                 initSignaturePad('sig-responsible');
                 initSignaturePad('sig-client');
             }, 300);
         });
 
+        // --- SISTEMA DE ASSINATURA ---
         function initSignaturePad(canvasId) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
@@ -250,7 +497,7 @@
                 ctx.lineWidth = 3; 
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round'; 
-                ctx.strokeStyle = '#000';
+                ctx.strokeStyle = '#001a4d'; // Cor da tinta azul escuro
             }
             resizeCanvas();
 
@@ -287,15 +534,15 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
-        // --- SOLUÇÃO ANTI-CRASH (Blob + FileSaver) ---
+        // --- GERADOR DE PDF ---
         function baixarPDF() {
             const element = document.getElementById('conteudo-vistoria');
             const btn = document.querySelector('.btn-save');
-            const originalText = document.getElementById('btn-text').innerText;
+            const originalText = "💾 SALVAR PDF";
             const placaInput = document.getElementById('placa_veiculo').value;
             
             if(!placaInput) { 
-                alert("⚠️ Preencha a PLACA."); 
+                alert("⚠️ Por favor, preencha a PLACA do veículo para salvar."); 
                 document.getElementById('placa_veiculo').focus(); 
                 return; 
             }
@@ -306,33 +553,29 @@
             btn.innerHTML = "⏳ GERANDO...";
 
             const opt = {
-                margin:       0.2,
+                margin:       0.2, // Margem fina
                 filename:     fileName,
-                image:        { type: 'jpeg', quality: 0.95 }, // Qualidade levemente reduzida para economizar RAM
+                image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
                 pagebreak:    { mode: 'css' }
             };
 
-            // USA .toPdf().get('pdf') PARA GERAR BLOB E SALVAR COM FILESAVER
-            // ISSO EVITA O ERRO DE URI GIGANTE QUE TRAVA O ANDROID
-            html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
-                
-                var blob = pdf.output('blob');
-                saveAs(blob, fileName); // Função do FileSaver.js (mais segura)
-
-                btn.innerHTML = `<span id="btn-text">✅ SALVO!</span>`;
-                setTimeout(() => btn.innerHTML = `<span id="btn-text">${originalText}</span>`, 3000);
-
-            }).catch(err => {
-                console.error(err);
-                alert("Erro ao salvar: " + err.message);
-                btn.innerHTML = `<span id="btn-text">${originalText}</span>`;
-            });
+            // MÉTODO PADRÃO ROBUSTO (Funciona PC e Mobile Browser)
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    btn.innerHTML = `✅ SALVO!`;
+                    setTimeout(() => btn.innerHTML = originalText, 2500);
+                }).catch(err => {
+                    console.error(err);
+                    alert("Erro ao salvar. Tente novamente.");
+                    btn.innerHTML = originalText;
+                });
+            }, 500);
         }
 
         function limparFormulario() {
-            if(confirm('Limpar TUDO?')) {
+            if(confirm('Tem certeza que deseja limpar todo o formulário?')) {
                 document.querySelectorAll('input:not([type="date"]):not([type="time"])').forEach(i => {
                     if(i.type==='checkbox'||i.type==='radio') i.checked=false; else i.value='';
                 });
