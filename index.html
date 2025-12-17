@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checklist Porto Mais - Vistoria</title>
-    <!-- Biblioteca html2pdf.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -52,38 +51,48 @@
         .radio-label { display: flex; align-items: center; font-size: 11px; cursor: pointer; }
         .radio-label input { margin-right: 3px; accent-color: #e63946; }
 
-        /* --- ÁREA DE ASSINATURA --- */
+        /* --- NOVA ÁREA DE ASSINATURA --- */
+        /* Configuração para ocupar a largura total (um embaixo do outro) */
+        .signature-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Espaço entre as duas assinaturas */
+            margin-top: 15px;
+        }
+        
         .signature-wrapper {
             position: relative;
-            width: 100%;
-            border: 1px dashed #ccc;
+            width: 100%; /* Largura Total */
+            border: 2px dashed #bbb; /* Borda mais visível */
             background-color: #fcfcfc;
-            border-radius: 4px;
-            margin-bottom: 5px;
+            border-radius: 6px;
         }
+
         canvas {
             display: block;
             width: 100%;
-            height: 120px; /* Altura da área de assinatura */
+            height: 200px; /* AUMENTADO PARA DAR ESPAÇO */
             cursor: crosshair;
-            touch-action: none; /* Impede rolar a tela ao assinar */
+            touch-action: none; 
         }
+
         .clear-sig {
             position: absolute;
-            top: 2px;
-            right: 2px;
+            top: 5px;
+            right: 5px;
             background: #ffcccc;
             color: #cc0000;
             border: none;
             border-radius: 3px;
-            padding: 2px 6px;
-            font-size: 10px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: bold;
             cursor: pointer;
             z-index: 10;
         }
 
         /* BOTÕES DE AÇÃO */
-        .actions { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
+        .actions { margin-top: 30px; display: flex; gap: 15px; justify-content: center; padding-bottom: 20px; }
         .btn {
             padding: 15px 30px; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; 
             cursor: pointer; text-transform: uppercase; transition: background 0.2s;
@@ -99,8 +108,10 @@
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
-            .actions, .clear-sig { display: none !important; } /* Esconde botões no PDF */
+            .actions, .clear-sig { display: none !important; }
             .signature-wrapper { border: 1px solid #000; background: transparent; }
+            /* No PDF, reduz um pouco a altura para não gastar muita folha, se necessário */
+            canvas { height: 150px; } 
         }
     </style>
 </head>
@@ -111,7 +122,6 @@
         <!-- HEADER -->
         <div class="header">
             <div class="logo-section">
-                <!-- Certifique-se de que a logo.png está na pasta ou use Base64 -->
                 <img src="logo.png" class="logo-img" alt="Logo Porto Mais" crossorigin="anonymous">
                 <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
             </div>
@@ -285,31 +295,35 @@
         <div class="section">
             <div class="section-title">📋 AUTORIZAÇÃO E ASSINATURA DIGITAL</div>
             <div class="section-content">
-                <p style="font-size: 11px; margin-bottom: 15px; line-height: 1.3;">
+                <p style="font-size: 11px; margin-bottom: 10px; line-height: 1.3;">
                     Declaro que os pertences acima foram conferidos na minha presença e autorizo a desmontagem para orçamento/reparo.
                 </p>
                 
-                <div class="form-row" style="margin-top: 15px;">
+                <!-- ÁREA DE ASSINATURA EMPILHADA (100% de largura) -->
+                <div class="signature-stack">
+                    
                     <!-- ASSINATURA 1 -->
                     <div class="form-group">
-                        <label>Assinatura Responsável (Oficina/Porto Mais)</label>
+                        <label style="font-size: 13px;">Assinatura Responsável (Oficina/Porto Mais)</label>
                         <div class="signature-wrapper">
                             <canvas id="sig-responsible"></canvas>
-                            <button class="clear-sig" onclick="clearSig('sig-responsible')">Limpar X</button>
+                            <button class="clear-sig" onclick="clearSig('sig-responsible')">LIMPAR 🗑️</button>
                         </div>
                     </div>
                     
                     <!-- ASSINATURA 2 -->
                     <div class="form-group">
-                        <label>Assinatura Cliente / Entregador</label>
+                        <label style="font-size: 13px;">Assinatura Cliente / Entregador</label>
                         <div class="signature-wrapper">
                             <canvas id="sig-client"></canvas>
-                            <button class="clear-sig" onclick="clearSig('sig-client')">Limpar X</button>
+                            <button class="clear-sig" onclick="clearSig('sig-client')">LIMPAR 🗑️</button>
                         </div>
                     </div>
+
                 </div>
-                <p style="font-size: 10px; color: #888; text-align: center; margin-top: 5px;">
-                    (Assine na caixa acima usando o dedo ou mouse)
+                
+                <p style="font-size: 10px; color: #888; text-align: center; margin-top: 10px;">
+                    (Utilize a área acima para assinar com o dedo)
                 </p>
             </div>
         </div>
@@ -352,29 +366,40 @@
         });
 
         // --- LÓGICA DE ASSINATURA (CANVAS) ---
-        const sigPads = {}; // Guardar referências
+        const sigPads = {}; 
 
         function initSignaturePad(canvasId) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
             let drawing = false;
 
-            // Ajustar tamanho real do canvas para não pixelar
             function resizeCanvas() {
+                // Pega a largura real do elemento pai
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                
+                // Define tamanho visual
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                
+                // Define tamanho do buffer interno
                 canvas.width = canvas.offsetWidth * ratio;
                 canvas.height = canvas.offsetHeight * ratio;
+                
                 ctx.scale(ratio, ratio);
-                ctx.lineWidth = 2; // Espessura da caneta
+                ctx.lineWidth = 3; // Linha um pouco mais grossa para celular
                 ctx.lineCap = 'round';
+                ctx.lineJoin = 'round'; // Curvas mais suaves
                 ctx.strokeStyle = '#000';
             }
             
-            // Chama o resize inicial e no redimensionamento da tela
-            resizeCanvas();
-            // window.addEventListener('resize', resizeCanvas); // Cuidado: isso limpa a assinatura se girar a tela
+            // Ajusta inicialmente e aguarda um pouco para layout renderizar
+            setTimeout(resizeCanvas, 100);
+            window.addEventListener('resize', () => {
+                // Apenas ajusta se não houver desenho (para não limpar assinatura ao girar tela)
+                // Se quiser redimensionar sempre, remova o if
+                // resizeCanvas(); 
+            });
 
-            // Funções de desenho
             function startPosition(e) {
                 drawing = true;
                 draw(e);
@@ -386,7 +411,6 @@
             function draw(e) {
                 if (!drawing) return;
                 
-                // Coordenadas Mouse vs Touch
                 let clientX, clientY;
                 if(e.touches) {
                     clientX = e.touches[0].clientX;
@@ -402,11 +426,9 @@
                 ctx.beginPath();
                 ctx.moveTo(clientX - rect.left, clientY - rect.top);
                 
-                // Previne scroll da tela no celular enquanto desenha
                 e.preventDefault(); 
             }
 
-            // Event Listeners (Mouse + Touch)
             canvas.addEventListener('mousedown', startPosition);
             canvas.addEventListener('mouseup', endPosition);
             canvas.addEventListener('mousemove', draw);
@@ -414,15 +436,11 @@
             canvas.addEventListener('touchstart', startPosition, {passive: false});
             canvas.addEventListener('touchend', endPosition);
             canvas.addEventListener('touchmove', draw, {passive: false});
-
-            sigPads[canvasId] = ctx;
         }
 
-        // Função Limpar Assinatura
         function clearSig(id) {
             const canvas = document.getElementById(id);
             const ctx = canvas.getContext('2d');
-            // Limpa usando o tamanho interno real
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
@@ -441,10 +459,9 @@
 
             btn.innerHTML = "⏳ GERANDO...";
             
-            // Oculta os botões de limpar assinatura temporariamente para o print (via CSS media print já resolve, mas reforçando)
-            
             const opt = {
-                margin:       [0.3, 0.3, 0.1, 0.3], 
+                // Margens ajustadas para o documento mais longo
+                margin:       [0.2, 0.2, 0.2, 0.2], 
                 filename:     `vistoria_${placa || 'portomais'}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
@@ -454,6 +471,7 @@
                     backgroundColor: '#ffffff'
                 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+                // Configuração crítica para não quebrar a assinatura no meio
                 pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
@@ -468,7 +486,6 @@
             }, 500);
         }
 
-        // --- LIMPAR TUDO ---
         function limparFormulario() {
             if(confirm('Limpar TUDO (incluindo assinaturas)?')) {
                 document.querySelectorAll('input').forEach(input => {
@@ -479,7 +496,6 @@
                 });
                 document.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
                 
-                // Limpar assinaturas
                 clearSig('sig-responsible');
                 clearSig('sig-client');
 
