@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* --- ESTILOS BASE --- */
+        /* --- ESTILOS GERAIS (MANTIDOS) --- */
         :root {
             --primary: #001a4d;
             --secondary: #003380;
@@ -40,7 +40,6 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
-        /* --- HEADER & SEÇÕES --- */
         .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 25px; }
         .logo-img { max-width: 180px; height: auto; display: block; margin: 0 auto 8px; }
         .header-subtitle { font-size: 13px; color: #666; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
@@ -87,76 +86,54 @@
             cursor: pointer; z-index: 10;
         }
 
-        /* --- NOVA ÁREA DE FOTOS --- */
+        /* --- FOTOS NA INTERFACE (UPLOAD) --- */
         .photo-upload-area {
-            border: 2px dashed var(--primary);
-            background: #f0f4f8;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 15px;
-            transition: background 0.2s;
+            border: 2px dashed var(--primary); background: #f0f4f8; padding: 20px;
+            text-align: center; border-radius: 8px; cursor: pointer; margin-bottom: 15px;
         }
-        .photo-upload-area:hover { background: #e1e7ee; }
         .photo-upload-label { font-weight: bold; color: var(--primary); display: block; margin-bottom: 5px; }
         .photo-upload-sub { font-size: 11px; color: #666; }
         
-        /* Grid de visualização das fotos */
         #photo-preview-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 15px;
         }
-        .photo-card {
-            position: relative;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #fff;
-        }
-        .photo-card img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            display: block;
-        }
+        .photo-card { position: relative; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; background: #fff; }
+        .photo-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
         .btn-remove-photo {
-            position: absolute;
-            top: 5px; right: 5px;
-            background: rgba(230, 57, 70, 0.9);
-            color: white;
-            border: none;
-            width: 24px; height: 24px;
-            border-radius: 50%;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 5px; right: 5px; background: rgba(230, 57, 70, 0.9); color: white;
+            border: none; width: 24px; height: 24px; border-radius: 50%; font-weight: bold; cursor: pointer;
         }
 
-        /* Estilo para as fotos NO PDF (escondido na tela normal) */
-        .pdf-photos-page {
-            display: none; /* Esconde na tela */
-            page-break-before: always;
-            margin-top: 20px;
+        /* --- ÁREA DE FOTOS DO PDF (CORREÇÃO) --- */
+        #pdf-photos-area {
+            /* IMPORTANTE: Não use display:none aqui, controlaremos via JS */
+            display: none; 
+            margin-top: 30px;
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
         }
+        
         .pdf-photo-grid {
             display: grid;
-            grid-template-columns: 1fr; /* 1 por linha (bem grande) ou 2 por linha */
+            grid-template-columns: 1fr; /* 1 foto grande por linha */
             gap: 20px;
         }
+        
         .pdf-photo-item {
             text-align: center;
-            border: 1px solid #ccc;
-            padding: 10px;
             background: #fff;
-            break-inside: avoid; /* Não quebra foto no meio */
+            padding: 10px;
+            border: 1px solid #eee;
+            /* Garante que a foto não seja cortada na quebra de página */
+            break-inside: avoid; 
+            page-break-inside: avoid;
         }
+        
         .pdf-photo-item img {
             max-width: 100%;
-            max-height: 400px; /* Limite de altura para caber na página */
+            max-height: 500px; /* Limite de altura */
             object-fit: contain;
+            border-radius: 4px;
         }
 
         /* --- BOTÕES --- */
@@ -170,18 +147,8 @@
 
         /* MODO IMPRESSÃO/PDF */
         @media print {
-            .container { box-shadow: none; padding: 0; max-width: 100%; }
-            .actions, .clear-sig, .photo-upload-area, .btn-remove-photo { display: none !important; }
-            .section { break-inside: avoid; }
-            .signature-wrapper { border: 1px solid #000; height: 140px; }
-            
-            /* Mostra as fotos no PDF */
-            .pdf-photos-page { display: block !important; }
-            /* Esconde o preview pequeno para não duplicar */
-            #photo-preview-container { display: none !important; }
+            .actions, .photo-upload-area, .btn-remove-photo { display: none !important; }
         }
-        
-        @media (max-width: 600px) { .actions { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -202,7 +169,7 @@
             <div class="info-item"><label>Nº Sinistro/Evento</label><input type="text" placeholder="Digite..." inputmode="numeric"></div>
         </div>
 
-        <!-- SEÇÕES DE DADOS (Resumido para caber aqui, igual ao anterior) -->
+        <!-- SEÇÕES -->
         <div class="section">
             <div class="section-title">📍 DADOS DA OFICINA / RESPONSÁVEL</div>
             <div class="section-content">
@@ -289,18 +256,15 @@
             </div>
         </div>
 
-        <!-- FOTOS DO VEÍCULO (INTERFACE) -->
+        <!-- UPLOAD DE FOTOS (Visível apenas na tela) -->
         <div class="section" data-html2canvas-ignore="true">
             <div class="section-title">📸 FOTOS DO VEÍCULO</div>
             <div class="section-content">
-                <!-- Área de clique para upload -->
                 <div class="photo-upload-area" onclick="document.getElementById('photo_input').click()">
                     <span class="photo-upload-label">+ ADICIONAR FOTOS</span>
-                    <span class="photo-upload-sub">Clique para tirar foto ou escolher da galeria</span>
+                    <span class="photo-upload-sub">Clique para selecionar</span>
                     <input type="file" id="photo_input" accept="image/*" multiple style="display: none;" onchange="handlePhotoUpload(this)">
                 </div>
-                
-                <!-- Onde as miniaturas aparecem na tela -->
                 <div id="photo-preview-container"></div>
             </div>
         </div>
@@ -323,12 +287,12 @@
             </div>
         </div>
 
-        <!-- ÁREA ESCONDIDA: ONDE AS FOTOS VÃO FICAR NO PDF -->
-        <div id="pdf-photos-area" class="pdf-photos-page">
+        <!-- ÁREA QUE APARECERÁ SÓ NO PDF -->
+        <div id="pdf-photos-area">
+            <!-- Quebra de página forçada antes das fotos -->
+            <div style="page-break-before: always;"></div> 
             <div class="section-title" style="margin-bottom: 20px;">📸 REGISTRO FOTOGRÁFICO</div>
-            <div class="pdf-photo-grid" id="pdf-photo-grid">
-                <!-- As fotos grandes serão injetadas aqui via JS -->
-            </div>
+            <div class="pdf-photo-grid" id="pdf-photo-grid"></div>
         </div>
 
         <!-- BOTÕES -->
@@ -340,7 +304,6 @@
     </div>
 
     <script>
-        // --- 1. CONFIGURAÇÃO INICIAL ---
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
             const dateInput = document.getElementById('data_entrada');
@@ -358,7 +321,7 @@
             }, 300);
         });
 
-        // --- 2. SISTEMA DE FOTOS ---
+        // --- SISTEMA DE FOTOS ---
         function handlePhotoUpload(input) {
             if (input.files && input.files.length > 0) {
                 Array.from(input.files).forEach(file => {
@@ -377,10 +340,7 @@
             const container = document.getElementById('photo-preview-container');
             const div = document.createElement('div');
             div.className = 'photo-card';
-            div.innerHTML = `
-                <img src="${src}">
-                <button class="btn-remove-photo" onclick="removePhoto(this, '${src}')">×</button>
-            `;
+            div.innerHTML = `<img src="${src}"><button class="btn-remove-photo" onclick="removePhoto(this, '${src}')">×</button>`;
             container.appendChild(div);
         }
 
@@ -388,28 +348,20 @@
             const container = document.getElementById('pdf-photo-grid');
             const div = document.createElement('div');
             div.className = 'pdf-photo-item';
-            // Adiciona um atributo para identificar a imagem para remoção depois
-            div.setAttribute('data-src', src.substring(0, 30)); 
             div.innerHTML = `<img src="${src}">`;
             container.appendChild(div);
         }
 
         function removePhoto(btn, src) {
-            // Remove da tela
             btn.parentElement.remove();
-            
-            // Remove da área oculta do PDF
             const pdfContainer = document.getElementById('pdf-photo-grid');
             const items = pdfContainer.getElementsByClassName('pdf-photo-item');
             for (let item of items) {
-                if (item.querySelector('img').src === src) {
-                    item.remove();
-                    break;
-                }
+                if (item.querySelector('img').src === src) { item.remove(); break; }
             }
         }
 
-        // --- 3. ASSINATURAS ---
+        // --- ASSINATURAS ---
         function initSignaturePad(canvasId) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
@@ -456,9 +408,10 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
         }
 
-        // --- 4. GERAR PDF ---
+        // --- GERADOR PDF CORRIGIDO (MOSTRA E ESCONDE FOTOS) ---
         function baixarPDF() {
             const element = document.getElementById('conteudo-vistoria');
+            const photosArea = document.getElementById('pdf-photos-area'); // Área oculta
             const btn = document.querySelector('.btn-save');
             const originalText = "💾 SALVAR PDF";
             const placaInput = document.getElementById('placa_veiculo').value;
@@ -472,22 +425,29 @@
 
             btn.innerHTML = "⏳ GERANDO...";
 
+            // 1. REVELA A ÁREA DE FOTOS PARA O PRINT
+            photosArea.style.display = 'block';
+
             const opt = {
                 margin:       0.2,
                 filename:     fileName,
                 image:        { type: 'jpeg', quality: 0.95 },
                 html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                // Pagebreak inteligente para não cortar fotos
-                pagebreak:    { mode: ['css', 'legacy'] } 
+                pagebreak:    { mode: ['css', 'legacy'] }
             };
 
+            // 2. GERA O PDF
             setTimeout(() => {
                 html2pdf().set(opt).from(element).save().then(() => {
+                    // 3. ESCONDE A ÁREA DE FOTOS DE NOVO
+                    photosArea.style.display = 'none';
+                    
                     btn.innerHTML = `✅ SALVO!`;
                     setTimeout(() => btn.innerHTML = originalText, 2500);
                 }).catch(err => {
                     console.error(err);
+                    photosArea.style.display = 'none'; // Garante que esconde mesmo se der erro
                     alert("Erro ao salvar.");
                     btn.innerHTML = originalText;
                 });
@@ -499,8 +459,8 @@
                 document.querySelectorAll('input:not([type="date"]):not([type="time"])').forEach(i => i.value='');
                 document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(i => i.checked=false);
                 document.querySelectorAll('select').forEach(s => s.selectedIndex=0);
-                document.getElementById('photo-preview-container').innerHTML = ''; // Limpa previews
-                document.getElementById('pdf-photo-grid').innerHTML = ''; // Limpa fotos do PDF
+                document.getElementById('photo-preview-container').innerHTML = ''; 
+                document.getElementById('pdf-photo-grid').innerHTML = ''; 
                 clearSig('sig-responsible');
                 clearSig('sig-client');
                 window.scrollTo(0,0);
