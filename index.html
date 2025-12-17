@@ -3,356 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#001a4d">
     <title>Checklist Porto Mais</title>
     
-    <!-- Ícone -->
     <link rel="icon" type="image/png" href="logo.png">
-    
-    <!-- Biblioteca PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* --- ESTILOS VISUAIS --- */
-        :root { --primary: #001a4d; --secondary: #003380; --accent: #e63946; --bg: #f4f6f9; --text: #333; --border: #e0e0e0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: sans-serif; background-color: var(--bg); color: var(--text); padding: 15px; }
+        :root { --primary: #001a4d; --bg: #f4f6f9; --text: #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        body { 
+            font-family: sans-serif; 
+            background: var(--bg); 
+            padding: 20px; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: #fff; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
 
         /* HEADER */
-        .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 20px; }
-        .logo-img { max-width: 180px; display: block; margin: 0 auto 10px; }
-        .header-subtitle { font-size: 14px; font-weight: bold; color: #666; text-transform: uppercase; }
+        .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
+        .logo-img { max-width: 150px; display: block; margin: 0 auto 5px; } /* Logo menor para economizar espaço */
+        .header-subtitle { font-size: 14px; font-weight: bold; color: #555; text-transform: uppercase; }
 
-        /* INPUTS DO TOPO */
-        .info-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .info-item { background: #f8f9fb; padding: 8px; border-left: 4px solid var(--primary); border-radius: 4px; }
+        /* INPUTS TOPO */
+        .info-header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .info-item { background: #f8f9fb; padding: 6px; border-left: 4px solid var(--primary); border-radius: 4px; }
         .info-item label { display: block; font-size: 10px; font-weight: bold; color: var(--primary); }
-        .info-item input { width: 100%; border: none; background: transparent; font-weight: bold; font-size: 14px; outline: none; }
+        .info-item input { width: 100%; border: none; background: transparent; font-weight: bold; font-size: 13px; outline: none; }
 
         /* SEÇÕES */
-        .section { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; page-break-inside: avoid; }
-        .section-title { background: var(--primary); color: white; padding: 8px 15px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .section-content { padding: 12px; background: #fff; }
+        .section { margin-bottom: 12px; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; page-break-inside: avoid; }
+        .section-title { background: var(--primary); color: white; padding: 6px 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .section-content { padding: 10px; background: #fff; }
 
-        /* GRIDS DE FORMULÁRIO */
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        /* GRIDS */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+        .form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 10px; font-weight: bold; color: #555; margin-bottom: 3px; }
-        .form-group input, .form-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; }
+        .form-group label { font-size: 10px; font-weight: bold; color: #555; margin-bottom: 2px; }
+        .form-group input, .form-group select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
 
-        /* CHECKBOX E RADIO */
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 5px; }
-        .checkbox-item { display: flex; align-items: center; font-size: 11px; background: #f9f9f9; padding: 6px; border-radius: 4px; cursor: pointer; }
+        /* CHECKBOX */
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px; }
+        .checkbox-item { font-size: 10px; display: flex; align-items: center; background: #f9f9f9; padding: 5px; border-radius: 3px; }
         .checkbox-item input { margin-right: 5px; }
+
+        /* RADIOS */
         .radio-group { display: flex; gap: 10px; }
-        .radio-label { display: flex; align-items: center; font-size: 11px; cursor: pointer; }
-        .radio-label input { margin-right: 3px; }
+        .radio-label { font-size: 11px; display: flex; align-items: center; }
 
         /* ASSINATURAS */
-        .signature-section { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; page-break-inside: avoid; }
-        .signature-box label { display: block; font-size: 10px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
-        .signature-wrapper { position: relative; width: 100%; height: 140px; border: 2px dashed #ccc; background: #fafafa; border-radius: 6px; }
-        canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
-        .clear-sig { position: absolute; top: 5px; right: 5px; background: #ffeaea; color: red; border: 1px solid red; font-size: 10px; padding: 2px 5px; cursor: pointer; }
+        .signature-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; page-break-inside: avoid; }
+        .signature-wrapper { position: relative; height: 120px; border: 2px dashed #ccc; background: #fafafa; border-radius: 5px; }
+        canvas { display: block; width: 100%; height: 100%; }
+        .clear-sig { position: absolute; top: 2px; right: 2px; background: #ffeaea; border: 1px solid red; color: red; font-size: 9px; padding: 2px 5px; cursor: pointer; }
 
-        /* UPLOAD DE FOTOS (TELA) */
-        .photo-upload-area { border: 2px dashed var(--primary); background: #f0f4f8; padding: 15px; text-align: center; border-radius: 6px; cursor: pointer; margin-bottom: 10px; }
-        #photo-preview-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 5px; }
-        .photo-card { position: relative; border: 1px solid #ddd; height: 80px; }
+        /* FOTOS (UPLOAD) */
+        .photo-upload-area { border: 2px dashed var(--primary); background: #f0f4f8; padding: 15px; text-align: center; margin-bottom: 10px; cursor: pointer; }
+        #photo-preview-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 5px; }
+        .photo-card { height: 70px; border: 1px solid #ddd; position: relative; }
         .photo-card img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-remove-photo { position: absolute; top: 0; right: 0; background: red; color: white; border: none; width: 20px; height: 20px; cursor: pointer; }
+        .btn-remove-photo { position: absolute; top: 0; right: 0; background: red; color: white; border: none; width: 18px; height: 18px; cursor: pointer; font-size: 10px; }
 
-        /* TABELA DE FOTOS PARA PDF (SOLUÇÃO ANTI-CORTE E ANTI-ACHATAMENTO) */
+        /* FOTOS PDF (TABELA) */
         #pdf-photos-area { display: none; margin-top: 20px; border-top: 2px solid #ddd; padding-top: 10px; }
         .photos-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        .photos-table td { width: 50%; vertical-align: top; padding: 5px; page-break-inside: avoid; }
-        
-        .photo-frame {
-            border: 1px solid #eee;
-            background: #fff;
-            padding: 5px;
-            height: 250px; /* Altura fixa para alinhar */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .photo-frame img {
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: contain; /* SEGREDO: Mantém a proporção real */
-        }
+        .photos-table td { width: 50%; padding: 5px; vertical-align: top; page-break-inside: avoid; }
+        .photo-frame { border: 1px solid #eee; padding: 5px; height: 220px; display: flex; align-items: center; justify-content: center; }
+        .photo-frame img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
 
-        /* BOTÕES */
-        .actions { margin-top: 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
-        .btn { padding: 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; }
+        /* BOTOES */
+        .actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+        .btn { padding: 12px 20px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; }
         .btn-save { background: var(--primary); }
-        .btn-clear { background: white; color: red; border: 1px solid red; }
+        .btn-clear { background: #fff; color: red; border: 1px solid red; }
 
-        @media (max-width: 600px) { .signature-section { grid-template-columns: 1fr; } }
-        @media print { .actions, .photo-upload-area, .btn-remove-photo { display: none !important; } }
+        @media print { 
+            body { padding: 0; background: white; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .actions, .photo-upload-area, .btn-remove-photo { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container" id="conteudo-vistoria">
-        
-        <div class="header">
-            <div class="logo-section">
-                <img src="logo.png" class="logo-img" alt="Logo" crossorigin="anonymous">
-                <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
-            </div>
+<div class="container" id="conteudo-vistoria">
+    
+    <div class="header">
+        <div class="logo-section">
+            <img src="logo.png" class="logo-img" alt="Logo" crossorigin="anonymous">
+            <div class="header-subtitle">VISTORIA E RECEBIMENTO DE VEÍCULO</div>
         </div>
-
-        <div class="info-header">
-            <div class="info-item"><label>Data</label><input type="date" id="data_entrada"></div>
-            <div class="info-item"><label>Hora</label><input type="time" id="hora_entrada"></div>
-            <div class="info-item"><label>Evento/Sinistro</label><input type="text" placeholder="Digite..."></div>
-        </div>
-
-        <!-- DADOS -->
-        <div class="section"><div class="section-title">📍 OFICINA</div><div class="section-content"><div class="form-row"><div class="form-group"><label>Nome</label><input type="text"></div><div class="form-group"><label>Consultor</label><input type="text"></div></div></div></div>
-        <div class="section"><div class="section-title">👤 CLIENTE</div><div class="section-content"><div class="form-row"><div class="form-group"><label>Nome</label><input type="text"></div><div class="form-group"><label>CPF/CNPJ</label><input type="text"></div></div></div></div>
-        <div class="section"><div class="section-title">🚗 VEÍCULO</div><div class="section-content"><div class="form-row"><div class="form-group"><label>Modelo</label><input type="text"></div><div class="form-group"><label>Placa</label><input type="text" id="placa_veiculo"></div><div class="form-group"><label>Cor</label><input type="text"></div></div></div></div>
-
-        <!-- CHECKLIST -->
-        <div class="section">
-            <div class="section-title">✅ ITENS</div>
-            <div class="section-content">
-                <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox"> Chave Roda</label><label class="checkbox-item"><input type="checkbox"> Macaco</label><label class="checkbox-item"><input type="checkbox"> Triângulo</label><label class="checkbox-item"><input type="checkbox"> Estepe</label><label class="checkbox-item"><input type="checkbox"> Manual</label><label class="checkbox-item"><input type="checkbox"> Extintor</label>
-                </div>
-                <div class="form-group" style="margin-top: 5px;"><label>Obs:</label><input type="text"></div>
-            </div>
-        </div>
-
-        <!-- PNEUS -->
-        <div class="section">
-            <div class="section-title">🛞 PNEUS</div>
-            <div class="section-content">
-                <div class="form-row">
-                    <div class="form-group"><label>Dianteiros</label><div class="radio-group"><label class="radio-label"><input type="radio" name="pd" value="Bom"> Bom</label><label class="radio-label"><input type="radio" name="pd" value="Ruim"> Ruim</label></div></div>
-                    <div class="form-group"><label>Traseiros</label><div class="radio-group"><label class="radio-label"><input type="radio" name="pt" value="Bom"> Bom</label><label class="radio-label"><input type="radio" name="pt" value="Ruim"> Ruim</label></div></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- FOTOS (TELA) -->
-        <div class="section" data-html2canvas-ignore="true">
-            <div class="section-title">📸 FOTOS</div>
-            <div class="section-content">
-                <div class="photo-upload-area" onclick="document.getElementById('photo_input').click()">
-                    <span>+ FOTOS</span>
-                    <input type="file" id="photo_input" accept="image/*" multiple style="display: none;" onchange="handlePhotoUpload(this)">
-                </div>
-                <div id="photo-preview-container"></div>
-            </div>
-        </div>
-
-        <!-- ASSINATURAS -->
-        <div class="section">
-            <div class="section-title">📋 ASSINATURAS</div>
-            <div class="section-content">
-                <div class="signature-section">
-                    <div class="signature-box">
-                        <label>RESPONSÁVEL</label>
-                        <div class="signature-wrapper"><canvas id="sig-responsible"></canvas><button class="clear-sig" onclick="clearSig('sig-responsible')">X</button></div>
-                    </div>
-                    <div class="signature-box">
-                        <label>CLIENTE</label>
-                        <div class="signature-wrapper"><canvas id="sig-client"></canvas><button class="clear-sig" onclick="clearSig('sig-client')">X</button></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ÁREA FOTOS PDF (TABELA) -->
-        <div id="pdf-photos-area">
-            <div class="section-title">📸 REGISTRO FOTOGRÁFICO</div>
-            <table class="photos-table" id="photos-table-body"></table>
-        </div>
-
-        <div class="actions" data-html2canvas-ignore="true">
-            <button class="btn btn-save" onclick="baixarPDF()">SALVAR PDF</button>
-            <button class="btn btn-clear" onclick="limparFormulario()">LIMPAR</button>
-        </div>
-
     </div>
 
-    <!-- SCRIPT CORRIGIDO -->
-    <script>
-        // Variável global para fotos
-        var fotosArray = [];
+    <div class="info-header">
+        <div class="info-item"><label>Data</label><input type="date" id="data_entrada"></div>
+        <div class="info-item"><label>Hora</label><input type="time" id="hora_entrada"></div>
+        <div class="info-item"><label>Evento</label><input type="text" placeholder="Digite..."></div>
+    </div>
 
-        // Inicialização Segura
-        window.onload = function() {
-            try {
-                const now = new Date();
-                // Tenta preencher data e hora
-                const d = document.getElementById('data_entrada');
-                if(d) d.valueAsDate = now;
-                
-                const h = document.getElementById('hora_entrada');
-                if(h) h.value = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    <!-- SEÇÕES -->
+    <div class="section"><div class="section-title">📍 OFICINA</div><div class="section-content"><div class="form-row"><div class="form-group"><label>Nome</label><input type="text"></div><div class="form-group"><label>Consultor</label><input type="text"></div></div></div></div>
+    
+    <div class="section"><div class="section-title">👤 CLIENTE</div><div class="section-content"><div class="form-row"><div class="form-group"><label>Nome</label><input type="text"></div><div class="form-group"><label>CPF/CNPJ</label><input type="text"></div></div></div></div>
 
-                // Caixa alta
-                document.querySelectorAll('input[type="text"]').forEach(function(inp) {
-                    inp.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
-                });
+    <div class="section"><div class="section-title">🚗 VEÍCULO</div><div class="section-content">
+        <div class="form-row three-col"><div class="form-group"><label>Modelo</label><input type="text"></div><div class="form-group"><label>Placa</label><input type="text" id="placa_veiculo"></div><div class="form-group"><label>Cor</label><input type="text"></div></div>
+    </div></div>
 
-                // Inicia assinaturas com delay para garantir layout
-                setTimeout(function() {
-                    iniciarCanvas('sig-responsible');
-                    iniciarCanvas('sig-client');
-                }, 500);
+    <div class="section"><div class="section-title">✅ CHECKLIST</div><div class="section-content">
+        <div class="checkbox-grid">
+            <label class="checkbox-item"><input type="checkbox"> Chave Roda</label><label class="checkbox-item"><input type="checkbox"> Macaco</label><label class="checkbox-item"><input type="checkbox"> Triângulo</label><label class="checkbox-item"><input type="checkbox"> Estepe</label><label class="checkbox-item"><input type="checkbox"> Manual</label><label class="checkbox-item"><input type="checkbox"> Extintor</label>
+        </div>
+        <div class="form-group" style="margin-top: 5px;"><label>Obs:</label><input type="text"></div>
+    </div></div>
 
-            } catch (e) {
-                console.error("Erro na inicialização:", e);
-                alert("Erro ao carregar sistema: " + e.message);
-            }
+    <div class="section"><div class="section-title">🛞 PNEUS</div><div class="section-content"><div class="form-row">
+        <div class="form-group"><label>Diant.</label><div class="radio-group"><label class="radio-label"><input type="radio" name="pd" value="Bom"> Bom</label><label class="radio-label"><input type="radio" name="pd" value="Ruim"> Ruim</label></div></div>
+        <div class="form-group"><label>Tras.</label><div class="radio-group"><label class="radio-label"><input type="radio" name="pt" value="Bom"> Bom</label><label class="radio-label"><input type="radio" name="pt" value="Ruim"> Ruim</label></div></div>
+    </div></div></div>
+
+    <div class="section" data-html2canvas-ignore="true"><div class="section-title">📸 FOTOS</div><div class="section-content">
+        <div class="photo-upload-area" onclick="document.getElementById('photo_input').click()"><span>+ FOTOS</span><input type="file" id="photo_input" accept="image/*" multiple style="display: none;" onchange="handlePhotoUpload(this)"></div>
+        <div id="photo-preview-container"></div>
+    </div></div>
+
+    <div class="section"><div class="section-title">📋 ASSINATURAS</div><div class="section-content">
+        <div class="signature-section">
+            <div><label style="font-size:10px; font-weight:bold; color:#001a4d">RESPONSÁVEL</label><div class="signature-wrapper"><canvas id="sig-responsible"></canvas><button class="clear-sig" onclick="clearSig('sig-responsible')">X</button></div></div>
+            <div><label style="font-size:10px; font-weight:bold; color:#001a4d">CLIENTE</label><div class="signature-wrapper"><canvas id="sig-client"></canvas><button class="clear-sig" onclick="clearSig('sig-client')">X</button></div></div>
+        </div>
+    </div></div>
+
+    <div id="pdf-photos-area"><div class="section-title">📸 REGISTRO FOTOGRÁFICO</div><table class="photos-table" id="photos-table-body"></table></div>
+
+    <div class="actions" data-html2canvas-ignore="true">
+        <button class="btn btn-save" onclick="baixarPDF()">SALVAR PDF</button>
+        <button class="btn btn-clear" onclick="limparFormulario()">LIMPAR</button>
+    </div>
+
+</div>
+
+<script>
+    var fotosArray = [];
+
+    window.onload = function() {
+        try {
+            const now = new Date();
+            const d = document.getElementById('data_entrada'); if(d) d.valueAsDate = now;
+            const h = document.getElementById('hora_entrada'); if(h) h.value = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+            document.querySelectorAll('input[type="text"]').forEach(function(inp) {
+                inp.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
+            });
+
+            setTimeout(function() { iniciarCanvas('sig-responsible'); iniciarCanvas('sig-client'); }, 500);
+        } catch(e) { console.error(e); }
+    };
+
+    function iniciarCanvas(id) {
+        var canvas = document.getElementById(id);
+        if(!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width; canvas.height = rect.height;
+        ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
+        var desenhando = false;
+
+        function getPos(e) {
+            var r = canvas.getBoundingClientRect();
+            var x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+            var y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+            return {x:x, y:y};
+        }
+        function start(e) { desenhando=true; ctx.beginPath(); var p=getPos(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }
+        function move(e) { if(!desenhando) return; var p=getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
+        function end(e) { desenhando=false; }
+
+        canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); canvas.addEventListener('mouseup', end);
+        canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false}); canvas.addEventListener('touchend', end);
+    }
+
+    function clearSig(id) { var c=document.getElementById(id); if(c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
+
+    function handlePhotoUpload(input) {
+        if(input.files && input.files.length) {
+            Array.from(input.files).forEach(function(file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var src = e.target.result;
+                    fotosArray.push(src);
+                    var div = document.createElement('div');
+                    div.className = 'photo-card';
+                    div.innerHTML = '<img src="'+src+'"><button class="btn-remove-photo" onclick="removerFoto(this, \''+src+'\')">X</button>';
+                    document.getElementById('photo-preview-container').appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
+    function removerFoto(btn, src) {
+        btn.parentElement.remove();
+        fotosArray = fotosArray.filter(function(s) { return s !== src; });
+    }
+
+    function baixarPDF() {
+        var btn = document.querySelector('.btn-save');
+        var areaFotos = document.getElementById('pdf-photos-area');
+        var placa = document.getElementById('placa_veiculo').value || "SEM_PLACA";
+
+        btn.innerText = "GERANDO...";
+        
+        // Montar Tabela
+        var tbody = document.getElementById('photos-table-body');
+        tbody.innerHTML = '';
+        var tr;
+        fotosArray.forEach(function(src, i) {
+            if(i % 2 === 0) { tr = document.createElement('tr'); tbody.appendChild(tr); }
+            var td = document.createElement('td');
+            td.innerHTML = '<div class="photo-frame"><img src="'+src+'"></div>';
+            tr.appendChild(td);
+        });
+        if(fotosArray.length % 2 !== 0 && tr) tr.appendChild(document.createElement('td'));
+
+        areaFotos.style.display = 'block';
+
+        // CONFIGURAÇÃO CRÍTICA PARA REMOVER ESPAÇO EM BRANCO
+        var opt = {
+            margin:       [0.2, 0.2, 0.2, 0.2], // Margens mínimas em todos os lados
+            filename:     'Checklist_' + placa.toUpperCase() + '.pdf',
+            image:        { type: 'jpeg', quality: 0.95 },
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true, 
+                scrollY: 0, // Força o scroll pro topo
+                windowWidth: 800 // Fixa largura para evitar distorção
+            },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: 'css', avoid: ['.section', 'tr'] } // Evita quebrar seções e linhas de tabela
         };
 
-        // Função de Assinatura (Canvas)
-        function iniciarCanvas(id) {
-            var canvas = document.getElementById(id);
-            if (!canvas) return;
+        html2pdf().set(opt).from(document.getElementById('conteudo-vistoria')).save()
+        .then(function() {
+            areaFotos.style.display = 'none';
+            btn.innerText = "SALVAR PDF";
+        })
+        .catch(function(err) {
+            console.error(err);
+            areaFotos.style.display = 'none';
+            btn.innerText = "SALVAR PDF";
+            alert("Erro ao salvar.");
+        });
+    }
 
-            var ctx = canvas.getContext('2d');
-            var desenhando = false;
+    function limparFormulario() { if(confirm("Limpar tudo?")) location.reload(); }
+</script>
 
-            // Ajusta tamanho real
-            var rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
-
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#000';
-
-            function getPos(evt) {
-                var r = canvas.getBoundingClientRect();
-                var x, y;
-                if (evt.touches) {
-                    x = evt.touches[0].clientX - r.left;
-                    y = evt.touches[0].clientY - r.top;
-                } else {
-                    x = evt.clientX - r.left;
-                    y = evt.clientY - r.top;
-                }
-                return { x: x, y: y };
-            }
-
-            function start(e) { desenhando = true; ctx.beginPath(); var p = getPos(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }
-            function move(e) { if (!desenhando) return; var p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
-            function end(e) { desenhando = false; }
-
-            // Eventos Mouse
-            canvas.addEventListener('mousedown', start);
-            canvas.addEventListener('mousemove', move);
-            canvas.addEventListener('mouseup', end);
-            // Eventos Touch (Celular)
-            canvas.addEventListener('touchstart', start, {passive: false});
-            canvas.addEventListener('touchmove', move, {passive: false});
-            canvas.addEventListener('touchend', end);
-        }
-
-        function clearSig(id) {
-            var c = document.getElementById(id);
-            if(c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
-        }
-
-        // Função Fotos
-        function handlePhotoUpload(input) {
-            if (input.files && input.files.length) {
-                Array.from(input.files).forEach(function(file) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        var src = e.target.result;
-                        fotosArray.push(src);
-                        
-                        // Adiciona preview na tela
-                        var div = document.createElement('div');
-                        div.className = 'photo-card';
-                        div.innerHTML = '<img src="'+src+'"><button class="btn-remove-photo" onclick="removerFoto(this, \''+src+'\')">X</button>';
-                        document.getElementById('photo-preview-container').appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-        }
-
-        function removerFoto(btn, src) {
-            btn.parentElement.remove();
-            fotosArray = fotosArray.filter(function(s) { return s !== src; });
-        }
-
-        // Montar Tabela PDF
-        function montarTabelaPDF() {
-            var tbody = document.getElementById('photos-table-body');
-            tbody.innerHTML = '';
-            
-            var tr;
-            fotosArray.forEach(function(src, i) {
-                if (i % 2 === 0) {
-                    tr = document.createElement('tr');
-                    tbody.appendChild(tr);
-                }
-                var td = document.createElement('td');
-                // IMPORTANTE: object-fit contain dentro da frame para não achatar
-                td.innerHTML = '<div class="photo-frame"><img src="'+src+'"></div>';
-                tr.appendChild(td);
-            });
-            // Completa célula se ímpar
-            if (fotosArray.length % 2 !== 0 && tr) {
-                tr.appendChild(document.createElement('td'));
-            }
-        }
-
-        // Gerar PDF
-        function baixarPDF() {
-            var btn = document.querySelector('.btn-save');
-            var areaFotos = document.getElementById('pdf-photos-area');
-            var placa = document.getElementById('placa_veiculo').value || "SEM_PLACA";
-            
-            btn.innerText = "GERANDO...";
-            
-            // 1. Prepara tabela
-            montarTabelaPDF();
-            // 2. Mostra área oculta
-            areaFotos.style.display = 'block';
-            
-            var opt = {
-                margin: 0.2,
-                filename: 'Checklist_' + placa.toUpperCase() + '.pdf',
-                image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: 'css' }
-            };
-
-            html2pdf().set(opt).from(document.getElementById('conteudo-vistoria')).save()
-            .then(function() {
-                areaFotos.style.display = 'none';
-                btn.innerText = "SALVAR PDF";
-                alert("PDF Salvo com Sucesso!");
-            })
-            .catch(function(err) {
-                console.error(err);
-                areaFotos.style.display = 'none';
-                btn.innerText = "SALVAR PDF";
-                alert("Erro: " + err.message);
-            });
-        }
-
-        function limparFormulario() {
-            if(confirm("Limpar tudo?")) {
-                location.reload(); // Jeito mais fácil e seguro de limpar tudo
-            }
-        }
-    </script>
 </body>
 </html>
